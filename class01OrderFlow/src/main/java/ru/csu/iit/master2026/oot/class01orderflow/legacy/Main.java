@@ -1,8 +1,10 @@
 package ru.csu.iit.master2026.oot.class01orderflow.legacy;
 
+import ru.csu.iit.master2026.oot.class01orderflow.domain.CourierDelivery;
 import ru.csu.iit.master2026.oot.class01orderflow.domain.Customer;
 import ru.csu.iit.master2026.oot.class01orderflow.domain.CustomerId;
 import ru.csu.iit.master2026.oot.class01orderflow.domain.Email;
+import ru.csu.iit.master2026.oot.class01orderflow.domain.ExpressDelivery;
 import ru.csu.iit.master2026.oot.class01orderflow.domain.Money;
 import ru.csu.iit.master2026.oot.class01orderflow.domain.OrderId;
 import ru.csu.iit.master2026.oot.class01orderflow.domain.OrderItem;
@@ -27,16 +29,16 @@ public class Main {
                 new OrderItem("Чайник", 1, rubles(2490)),
                 new OrderItem("Кружка", 2, rubles(350)));
 
-        OrderId first = service.place(anna, kettleAndMugs, "courier", false, null);
+        OrderId first = service.place(anna, kettleAndMugs, new CourierDelivery(), false, null);
         service.pay(first, rubles(3490));
         service.ship(first);
 
         // Тот же заказ со страховкой: 3490 + 3% = 3594.70 — клиент платит ровно столько
-        OrderId second = service.place(boris, kettleAndMugs, "courier", true, null);
+        OrderId second = service.place(boris, kettleAndMugs, new CourierDelivery(), true, null);
         service.pay(second, new Money(359_470));
 
         OrderId third = service.place(vera, List.of(new OrderItem("Ноутбук", 1, rubles(64990))),
-                "express", false, "SAVE10");
+                new ExpressDelivery(), false, "SAVE10");
         service.pay(third, rubles(58991));
         service.ship(third);
 

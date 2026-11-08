@@ -1,7 +1,9 @@
 package ru.csu.iit.master2026.oot.class01orderflow.legacy;
 
 import ru.csu.iit.master2026.oot.class01orderflow.domain.Customer;
+import ru.csu.iit.master2026.oot.class01orderflow.domain.DeliveryTariff;
 import ru.csu.iit.master2026.oot.class01orderflow.domain.Email;
+import ru.csu.iit.master2026.oot.class01orderflow.domain.ExpressDelivery;
 import ru.csu.iit.master2026.oot.class01orderflow.domain.Money;
 import ru.csu.iit.master2026.oot.class01orderflow.domain.OrderId;
 import ru.csu.iit.master2026.oot.class01orderflow.domain.OrderItem;
@@ -14,7 +16,7 @@ import java.util.Map;
  *
  * <p>Код намеренно не исправлен — это материал для демо и практики занятия 1.
  * Исправлены деньги ({@link Money} вместо {@code double}) и данные клиента и позиций
- * (значимые объекты вместо строк и параллельных массивов).
+ * (значимые объекты вместо строк и параллельных массивов), доставка — {@link DeliveryTariff}.
  * Строка заказа в хранилище — {@code Object[]}:
  * 0 клиент, 1 сумма, 2 доставка, 3 статус, 4 страховка.
  */
@@ -24,7 +26,7 @@ public class OrderService {
     private int counter = 0;
 
     public OrderId place(Customer customer, List<OrderItem> items,
-                         String delivery, boolean insurance, String promo) {
+                         DeliveryTariff delivery, boolean insurance, String promo) {
         if (items.isEmpty()) {
             System.out.println("Ошибка: заказ без позиций");
             return null;
@@ -42,16 +44,7 @@ public class OrderService {
             total = total.minus(Money.rubles(500));
         }
 
-        Money deliveryCost;
-        if ("express".equals(delivery)) {
-            deliveryCost = Money.rubles(500);
-        } else if ("courier".equals(delivery)) {
-            deliveryCost = total.isAtLeast(Money.rubles(5000)) ? Money.ZERO : Money.rubles(300);
-        } else {
-            System.out.println("Ошибка: неизвестный тип доставки " + delivery);
-            return null;
-        }
-        total = total.plus(deliveryCost);
+        total = total.plus(delivery.cost(total));
 
         if (insurance) {
             total = total.plus(total.percent(3));
@@ -62,7 +55,7 @@ public class OrderService {
         store.orders.put(id, new Object[]{customer, total, delivery, "NEW", insurance});
 
         String text = customer.name() + ", заказ " + id + " принят. Сумма: " + total;
-        if ("express".equals(delivery)) {
+        if (delivery instanceof ExpressDelivery) {
             text += " Экспресс-доставка: привезём завтра.";
         }
         if (total.compareTo(Money.rubles(10_000)) > 0) {
@@ -104,7 +97,7 @@ public class OrderService {
             return false;
         }
         row[3] = "SHIPPED";
-        int days = deliveryDays((String) row[2]);
+        int days = ((DeliveryTariff) row[2]).days();
         String text = "Заказ " + id + " передан в доставку, срок " + days + " дн.";
         Customer customer = (Customer) row[0];
         if (((Money) row[1]).compareTo(Money.rubles(10_000)) > 0) {
@@ -133,13 +126,6 @@ public class OrderService {
         return true;
     }
 
-    private int deliveryDays(String delivery) {
-        if ("express".equals(delivery)) {
-            return 1;
-        }
-        return 3;
-    }
-
     public String report() {
         int count = 0;
         int express = 0;
@@ -147,7 +133,7 @@ public class OrderService {
         for (Map.Entry<OrderId, Object[]> e : store.orders.entrySet()) {
             Object[] row = e.getValue();
             count++;
-            if ("express".equals(row[2])) {
+            if (row[2] instanceof ExpressDelivery) {
                 express++;
             }
             if ("PAID".equals(row[3]) || "SHIPPED".equals(row[3])) {
