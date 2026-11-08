@@ -74,6 +74,42 @@ class OrderTest {
     }
 
     @Test
+    void оплаченный_заказ_отправляется() {
+        var order = new Order(id, customer, items, new CourierDelivery());
+        order.pay();
+        order.ship();
+
+        assertThat(order.status()).isEqualTo(OrderStatus.SHIPPED);
+    }
+
+    @Test
+    void неоплаченный_заказ_отправить_нельзя() {
+        var order = new Order(id, customer, items, new CourierDelivery());
+
+        assertThatThrownBy(order::ship)
+                .isInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
+    void дважды_оплатить_нельзя() {
+        var order = new Order(id, customer, items, new CourierDelivery());
+        order.pay();
+
+        assertThatThrownBy(order::pay)
+                .isInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
+    void отправленный_заказ_отменить_нельзя() {
+        var order = new Order(id, customer, items, new CourierDelivery());
+        order.pay();
+        order.ship();
+
+        assertThatThrownBy(order::cancel)
+                .isInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
     void заказы_равны_по_идентификатору() {
         var a = new Order(id, customer, items, new CourierDelivery());
         var b = new Order(id, customer, items, new ExpressDelivery());
