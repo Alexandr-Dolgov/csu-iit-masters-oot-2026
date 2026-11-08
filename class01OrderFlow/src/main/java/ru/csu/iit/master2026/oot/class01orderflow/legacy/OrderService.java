@@ -1,11 +1,14 @@
 package ru.csu.iit.master2026.oot.class01orderflow.legacy;
 
+import ru.csu.iit.master2026.oot.class01orderflow.domain.Money;
+
 import java.util.Map;
 
 /**
  * Стартовое состояние OrderFlow: вся логика службы доставки в одном классе.
  *
  * <p>Код намеренно не исправлен — это материал для демо и практики занятия 1.
+ * Исправлены только деньги: {@link Money} вместо {@code double}.
  * Строка заказа в хранилище — {@code Object[]}:
  * 0 имя, 1 email, 2 телефон, 3 сумма, 4 доставка, 5 статус, 6 страховка.
  */
@@ -15,7 +18,7 @@ public class OrderService {
     private int counter = 0;
 
     public String place(String name, String email, String phone,
-                        String[] items, int[] qty, double[] prices,
+                        String[] items, int[] qty, Money[] prices,
                         String delivery, boolean insurance, String promo) {
         if (items == null || items.length == 0) {
             System.out.println("Ошибка: заказ без позиций");
@@ -26,46 +29,46 @@ public class OrderService {
             return null;
         }
 
-        double total = 0;
+        Money total = Money.ZERO;
         for (int i = 0; i < items.length; i++) {
             if (qty[i] <= 0) {
                 System.out.println("Ошибка: количество должно быть положительным: " + items[i]);
                 return null;
             }
-            total += qty[i] * prices[i];
+            total = total.plus(prices[i].times(qty[i]));
         }
 
         // промокоды действуют только на товары
         if ("SAVE10".equals(promo)) {
-            total = total * 0.9;
-        } else if ("SAVE500".equals(promo) && total >= 3000) {
-            total = total - 500;
+            total = total.minus(total.percent(10));
+        } else if ("SAVE500".equals(promo) && total.isAtLeast(Money.rubles(3000))) {
+            total = total.minus(Money.rubles(500));
         }
 
-        double deliveryCost;
+        Money deliveryCost;
         if ("express".equals(delivery)) {
-            deliveryCost = 500;
+            deliveryCost = Money.rubles(500);
         } else if ("courier".equals(delivery)) {
-            deliveryCost = total >= 5000 ? 0 : 300;
+            deliveryCost = total.isAtLeast(Money.rubles(5000)) ? Money.ZERO : Money.rubles(300);
         } else {
             System.out.println("Ошибка: неизвестный тип доставки " + delivery);
             return null;
         }
-        total += deliveryCost;
+        total = total.plus(deliveryCost);
 
         if (insurance) {
-            total = total * 1.03;
+            total = total.plus(total.percent(3));
         }
 
         counter++;
         String id = "ORD-" + counter;
         store.orders.put(id, new Object[]{name, email, phone, total, delivery, "NEW", insurance});
 
-        String text = name + ", заказ " + id + " принят. Сумма: " + total + " руб.";
+        String text = name + ", заказ " + id + " принят. Сумма: " + total;
         if ("express".equals(delivery)) {
             text += " Экспресс-доставка: привезём завтра.";
         }
-        if (total > 10000) {
+        if (total.compareTo(Money.rubles(10_000)) > 0) {
             sendSms(phone, text);
         } else {
             sendEmail(email, text);
@@ -73,7 +76,7 @@ public class OrderService {
         return id;
     }
 
-    public boolean pay(String id, double amount) {
+    public boolean pay(String id, Money amount) {
         Object[] row = store.orders.get(id);
         if (row == null) {
             System.out.println("Ошибка: заказ не найден " + id);
@@ -83,8 +86,8 @@ public class OrderService {
             System.out.println("Ошибка: заказ " + id + " уже в статусе " + row[5]);
             return false;
         }
-        double total = (double) row[3];
-        if (amount != total) {
+        Money total = (Money) row[3];
+        if (!amount.equals(total)) {
             System.out.println("Ошибка: оплата " + amount + " не совпадает с суммой заказа " + total);
             return false;
         }
@@ -106,7 +109,7 @@ public class OrderService {
         row[5] = "SHIPPED";
         int days = deliveryDays((String) row[4]);
         String text = "Заказ " + id + " передан в доставку, срок " + days + " дн.";
-        if ((double) row[3] > 10000) {
+        if (((Money) row[3]).compareTo(Money.rubles(10_000)) > 0) {
             sendSms((String) row[2], text);
         } else {
             sendEmail((String) row[1], text);
@@ -125,7 +128,7 @@ public class OrderService {
             return false;
         }
         if ("PAID".equals(row[5])) {
-            System.out.println("Возврат " + row[3] + " руб. по заказу " + id);
+            System.out.println("Возврат " + row[3] + " по заказу " + id);
         }
         row[5] = "CANCELLED";
         sendEmail((String) row[1], "Заказ " + id + " отменён");
@@ -142,7 +145,7 @@ public class OrderService {
     public String report() {
         int count = 0;
         int express = 0;
-        double revenue = 0;
+        Money revenue = Money.ZERO;
         for (Map.Entry<String, Object[]> e : store.orders.entrySet()) {
             Object[] row = e.getValue();
             count++;
@@ -150,10 +153,10 @@ public class OrderService {
                 express++;
             }
             if ("PAID".equals(row[5]) || "SHIPPED".equals(row[5])) {
-                revenue += (double) row[3];
+                revenue = revenue.plus((Money) row[3]);
             }
         }
-        return "Заказов: " + count + ", экспресс: " + express + ", выручка: " + revenue + " руб.";
+        return "Заказов: " + count + ", экспресс: " + express + ", выручка: " + revenue;
     }
 
     private void sendSms(String phone, String text) {
