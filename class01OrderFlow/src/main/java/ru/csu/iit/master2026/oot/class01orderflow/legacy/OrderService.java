@@ -1,41 +1,38 @@
 package ru.csu.iit.master2026.oot.class01orderflow.legacy;
 
+import ru.csu.iit.master2026.oot.class01orderflow.domain.Customer;
+import ru.csu.iit.master2026.oot.class01orderflow.domain.Email;
 import ru.csu.iit.master2026.oot.class01orderflow.domain.Money;
+import ru.csu.iit.master2026.oot.class01orderflow.domain.OrderId;
+import ru.csu.iit.master2026.oot.class01orderflow.domain.OrderItem;
 
+import java.util.List;
 import java.util.Map;
 
 /**
  * Стартовое состояние OrderFlow: вся логика службы доставки в одном классе.
  *
  * <p>Код намеренно не исправлен — это материал для демо и практики занятия 1.
- * Исправлены только деньги: {@link Money} вместо {@code double}.
+ * Исправлены деньги ({@link Money} вместо {@code double}) и данные клиента и позиций
+ * (значимые объекты вместо строк и параллельных массивов).
  * Строка заказа в хранилище — {@code Object[]}:
- * 0 имя, 1 email, 2 телефон, 3 сумма, 4 доставка, 5 статус, 6 страховка.
+ * 0 клиент, 1 сумма, 2 доставка, 3 статус, 4 страховка.
  */
 public class OrderService {
 
     private final InMemoryStore store = new InMemoryStore();
     private int counter = 0;
 
-    public String place(String name, String email, String phone,
-                        String[] items, int[] qty, Money[] prices,
-                        String delivery, boolean insurance, String promo) {
-        if (items == null || items.length == 0) {
+    public OrderId place(Customer customer, List<OrderItem> items,
+                         String delivery, boolean insurance, String promo) {
+        if (items.isEmpty()) {
             System.out.println("Ошибка: заказ без позиций");
-            return null;
-        }
-        if (email == null || !email.contains("@")) {
-            System.out.println("Ошибка: некорректный email " + email);
             return null;
         }
 
         Money total = Money.ZERO;
-        for (int i = 0; i < items.length; i++) {
-            if (qty[i] <= 0) {
-                System.out.println("Ошибка: количество должно быть положительным: " + items[i]);
-                return null;
-            }
-            total = total.plus(prices[i].times(qty[i]));
+        for (OrderItem item : items) {
+            total = total.plus(item.subtotal());
         }
 
         // промокоды действуют только на товары
@@ -61,77 +58,78 @@ public class OrderService {
         }
 
         counter++;
-        String id = "ORD-" + counter;
-        store.orders.put(id, new Object[]{name, email, phone, total, delivery, "NEW", insurance});
+        OrderId id = new OrderId("ORD-" + counter);
+        store.orders.put(id, new Object[]{customer, total, delivery, "NEW", insurance});
 
-        String text = name + ", заказ " + id + " принят. Сумма: " + total;
+        String text = customer.name() + ", заказ " + id + " принят. Сумма: " + total;
         if ("express".equals(delivery)) {
             text += " Экспресс-доставка: привезём завтра.";
         }
         if (total.compareTo(Money.rubles(10_000)) > 0) {
-            sendSms(phone, text);
+            sendSms(customer.phone(), text);
         } else {
-            sendEmail(email, text);
+            sendEmail(customer.email(), text);
         }
         return id;
     }
 
-    public boolean pay(String id, Money amount) {
+    public boolean pay(OrderId id, Money amount) {
         Object[] row = store.orders.get(id);
         if (row == null) {
             System.out.println("Ошибка: заказ не найден " + id);
             return false;
         }
-        if (!"NEW".equals(row[5])) {
-            System.out.println("Ошибка: заказ " + id + " уже в статусе " + row[5]);
+        if (!"NEW".equals(row[3])) {
+            System.out.println("Ошибка: заказ " + id + " уже в статусе " + row[3]);
             return false;
         }
-        Money total = (Money) row[3];
+        Money total = (Money) row[1];
         if (!amount.equals(total)) {
             System.out.println("Ошибка: оплата " + amount + " не совпадает с суммой заказа " + total);
             return false;
         }
-        row[5] = "PAID";
-        sendEmail((String) row[1], "Заказ " + id + " оплачен");
+        row[3] = "PAID";
+        sendEmail(((Customer) row[0]).email(), "Заказ " + id + " оплачен");
         return true;
     }
 
-    public boolean ship(String id) {
+    public boolean ship(OrderId id) {
         Object[] row = store.orders.get(id);
         if (row == null) {
             System.out.println("Ошибка: заказ не найден " + id);
             return false;
         }
-        if (!"PAID".equals(row[5])) {
+        if (!"PAID".equals(row[3])) {
             System.out.println("Ошибка: нельзя отправить неоплаченный заказ " + id);
             return false;
         }
-        row[5] = "SHIPPED";
-        int days = deliveryDays((String) row[4]);
+        row[3] = "SHIPPED";
+        int days = deliveryDays((String) row[2]);
         String text = "Заказ " + id + " передан в доставку, срок " + days + " дн.";
-        if (((Money) row[3]).compareTo(Money.rubles(10_000)) > 0) {
-            sendSms((String) row[2], text);
+        Customer customer = (Customer) row[0];
+        if (((Money) row[1]).compareTo(Money.rubles(10_000)) > 0) {
+            sendSms(customer.phone(), text);
         } else {
-            sendEmail((String) row[1], text);
+            sendEmail(customer.email(), text);
         }
         return true;
     }
 
-    public boolean cancel(String id) {
+    public boolean cancel(OrderId id) {
         Object[] row = store.orders.get(id);
         if (row == null) {
             System.out.println("Ошибка: заказ не найден " + id);
             return false;
         }
-        if ("SHIPPED".equals(row[5])) {
+        if ("SHIPPED".equals(row[3])) {
             System.out.println("Ошибка: отправленный заказ отменить нельзя " + id);
             return false;
         }
-        if ("PAID".equals(row[5])) {
-            System.out.println("Возврат " + row[3] + " по заказу " + id);
+        if ("PAID".equals(row[3])) {
+            System.out.println("Возврат " + row[1] + " по заказу " + id);
         }
-        row[5] = "CANCELLED";
-        sendEmail((String) row[1], "Заказ " + id + " отменён");
+        row[3] = "CANCELLED";
+        sendEmail(((Customer) row[0]).email(), "Заказ " + id + " отменён");
         return true;
     }
 
@@ -146,14 +144,14 @@ public class OrderService {
         int count = 0;
         int express = 0;
         Money revenue = Money.ZERO;
-        for (Map.Entry<String, Object[]> e : store.orders.entrySet()) {
+        for (Map.Entry<OrderId, Object[]> e : store.orders.entrySet()) {
             Object[] row = e.getValue();
             count++;
-            if ("express".equals(row[4])) {
+            if ("express".equals(row[2])) {
                 express++;
             }
-            if ("PAID".equals(row[5]) || "SHIPPED".equals(row[5])) {
-                revenue = revenue.plus((Money) row[3]);
+            if ("PAID".equals(row[3]) || "SHIPPED".equals(row[3])) {
+                revenue = revenue.plus((Money) row[1]);
             }
         }
         return "Заказов: " + count + ", экспресс: " + express + ", выручка: " + revenue;
@@ -163,7 +161,7 @@ public class OrderService {
         System.out.println("[SMS " + phone + "] " + text);
     }
 
-    private void sendEmail(String email, String text) {
+    private void sendEmail(Email email, String text) {
         System.out.println("[EMAIL " + email + "] " + text);
     }
 }
