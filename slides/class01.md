@@ -999,7 +999,7 @@ layout: section
 ## Ответственность и абстракция на примере OrderFlow
 
 <div class="text-sm opacity-60 mt-6">
-Код — <code>demo/lesson01</code>: пакет <code>legacy</code> (было) и <code>domain</code> / <code>app</code> / <code>infra</code> (стало)
+Код — модуль <code>class01OrderFlow</code>: пакет <code>legacy</code> шаг за шагом перерастает в <code>domain</code> / <code>app</code> / <code>infra</code>
 </div>
 
 ---
@@ -1022,6 +1022,7 @@ layout: statement
 
 ---
 layout: two-cols
+commit: "c491f5f"
 ---
 
 # Где это править?
@@ -1065,6 +1066,7 @@ total += deliveryCost;
 
 ---
 layout: default
+commit: "c491f5f"
 ---
 
 <div class="text-sm accent font-bold mb-2">В IDEA делали · шаг 1</div>
@@ -1075,7 +1077,7 @@ layout: default
 
 <div>
 
-Проект `demo/lesson01`, пакет `legacy`
+Модуль `class01OrderFlow`, пакет `legacy`
 
 1. `Ctrl+Shift+F` → `"express"`
 2. пройти по каждому вхождению
@@ -1215,6 +1217,7 @@ UML определяет ответственность как «контрак�
 
 ---
 layout: two-cols-header
+commit: "c491f5f"
 ---
 
 # Деньги — не `double`
@@ -1259,6 +1262,7 @@ BigDecimal — тоже вариант; копейки в long проще и д�
 
 ---
 layout: default
+commit: "c491f5f"
 ---
 
 <div class="text-sm accent font-bold mb-2">В IDEA делали · шаг 2</div>
@@ -1302,6 +1306,7 @@ layout: default
 
 ---
 layout: two-cols
+commit: "c04ab98"
 ---
 
 # `Money`: решение о том, что скрыть
@@ -1362,88 +1367,7 @@ public record Money(long kopecks)
 
 ---
 layout: default
----
-
-# Значимый объект и сущность
-
-<div class="grid grid-cols-2 gap-12 mt-6">
-
-<div>
-
-### Значимый объект <span class="text-sm opacity-60 font-normal">value object</span>
-
-- равенство **по значению**
-- неизменяемый, копируется свободно
-- в Java — обычно `record`
-
-<div class="mt-4 text-lg">
-
-`Money` `OrderId` `Email` `OrderItem`
-
-</div>
-
-</div>
-
-<div>
-
-### Сущность <span class="text-sm opacity-60 font-normal">entity</span>
-
-- равенство **по идентификатору**
-- состояние меняется, важен жизненный цикл
-- в Java — `final class` с `equals` по `id`
-
-<div class="mt-4 text-lg">
-
-`Order` `Customer`
-
-</div>
-
-</div>
-
-</div>
-
-```java
-@Override
-public boolean equals(Object o) {           // Order
-    return o instanceof Order other && id.equals(other.id);
-}
-```
-
-<div class="callout text-sm mt-2">
-
-Проверка: два объекта с одинаковыми данными — **один и тот же или разные?** Два `rubles(100)` неразличимы. Два заказа на 100 ₽ — разные заказы.
-
-</div>
-
-<!--
-Спорный случай: Customer у нас record, но он сущность (есть CustomerId) — сознательное упрощение занятия 1, к корректным equals/hashCode вернёмся на занятии 2.
-Деление определяет, где объект можно делать изменяемым, а где нельзя.
--->
-
----
-layout: default
----
-
-# Из литературы: значимый объект
-
-<div class="quote">
-
-> *Objects that are equal due to the value of their properties, in this case their x and y coordinates, are called value objects.*
-
-Объекты, равенство которых определяется значениями их свойств — в данном случае координат x и y, — называются значимыми объектами (value objects). <span class="opacity-50 text-xs">(пер. наш)</span>
-
-<div class="quote-src">Fowler M. ValueObject. — <a href="https://martinfowler.com/bliki/ValueObject.html">martinfowler.com/bliki/ValueObject.html</a> (сетевые ресурсы курса)</div>
-
-</div>
-
-<div class="text-sm opacity-70 mt-2">
-
-Там же Фаулер приводит деньги — сумму и валюту — как типичный значимый объект. Подробнее — в его книге Patterns of Enterprise Application Architecture (паттерны Value Object и Money).
-
-</div>
-
----
-layout: default
+commit: "c04ab98"
 ---
 
 <div class="text-sm accent font-bold mb-2">В IDEA делали · шаг 3</div>
@@ -1457,7 +1381,7 @@ layout: default
 1. создать `domain/Money` как `record`
 2. попробовать `new Money(-500)` — исключение
 3. запустить `MoneyTest`
-4. `OrderItem`: цена — `Money`, а не `double`
+4. `legacy.OrderService`: `double` → `Money`, запустить `legacy.Main` — оплата Бориса проходит
 
 </div>
 
@@ -1481,12 +1405,117 @@ void отрицательную_сумму_создать_нельзя() {
 </div>
 
 <!--
-minus не писали: он нигде не нужен прямо сейчас, а гибкость без требования — лишний код.
+minus, percent и isAtLeast появились, потому что их потребовал legacy-код: промокоды, страховка, пороги. Методов «на будущее» нет — гибкость без требования — лишний код.
 equals/hashCode/toString record даёт бесплатно.
 -->
 
 ---
 layout: two-cols-header
+commit: "df13718"
+---
+
+# Примитивозависимость
+
+::left::
+
+<div class="text-lg font-bold mb-2 bad">Было</div>
+
+```java
+public String place(String name, String email,
+                    String phone, String[] items,
+                    int[] qty, double[] prices,
+                    String delivery, boolean insurance,
+                    String promo)
+```
+
+<div class="text-sm opacity-60 mt-2">
+
+Девять параметров, шесть из них — `String` или массив. Поменяйте `email` и `phone` местами — компилятор промолчит.
+
+</div>
+
+::right::
+
+<div class="text-lg font-bold mb-2 good">Стало</div>
+
+```java
+public OrderId place(Customer customer,
+                     List<OrderItem> items,
+                     String delivery,
+                     boolean insurance,
+                     String promo)
+```
+
+<div class="text-sm opacity-60 mt-2">
+
+Покупателя и позиции уже не перепутать: типы разные. Невалидный `Email` не создаётся, три параллельных массива не рассинхронизируются. Но `String delivery` и `String promo` — ещё строки: это следующий шаг.
+
+</div>
+
+<!--
+Тип — самая дешёвая документация и самый быстрый тест.
+Параллельные массивы items/qty/prices: инвариант «одинаковая длина» нигде не проверяется. OrderItem делает нарушение невыразимым — нельзя иметь цену без товара.
+Проверки email и количества ушли из place() в Email и OrderItem: невалидное значение просто не создать.
+Дальше сигнатура только сужается: DeliveryTariff вместо строки, Promo вместо "SAVE10", и к концу — PlaceOrder.place(Customer, List<OrderItem>, DeliveryTariff).
+-->
+
+---
+layout: two-cols
+commit: "ed6c60a"
+---
+
+# Тариф — объект, а не строка
+
+```java
+public interface DeliveryTariff {
+    Money cost(Money goods);
+    int days();
+}
+
+public record CourierDelivery()
+        implements DeliveryTariff {
+
+    private static final Money PRICE =
+        Money.rubles(300);
+    private static final Money FREE_FROM =
+        Money.rubles(5000);
+
+    public Money cost(Money goods) {
+        return goods.isAtLeast(FREE_FROM)
+            ? Money.ZERO : PRICE;
+    }
+
+    public int days() { return 3; }
+}
+```
+
+::right::
+
+<div class="pl-8 pt-16">
+
+### Что исчезло из legacy
+
+- ветка `if ("express"...)` в `place()`
+- «Ошибка: неизвестный тип доставки» — неизвестного тарифа не бывает
+- `deliveryDays()` — срок знает сам тариф
+- строки `"express"` / `"courier"` в `Main`
+
+<div class="mt-6 text-sm opacity-60">
+
+Осталось: `instanceof ExpressDelivery` в тексте уведомления и в `report()`. Это знание поддержки и бухгалтерии — разнесём по ролям чуть позже.
+
+</div>
+
+</div>
+
+<!--
+Стоимость и срок — вопросы логистики, и теперь они в одном месте: в тарифе.
+Код, который считает доставку, больше не знает, какие тарифы бывают. Подробно о полиморфизме — на занятии 2.
+-->
+
+---
+layout: two-cols-header
+commit: "bdc054b"
 ---
 
 # Инкапсуляция — это не `private`
@@ -1575,6 +1604,7 @@ layout: default
 
 ---
 layout: default
+commit: "42c8942"
 ---
 
 <div class="text-sm accent font-bold mb-2">В IDEA делали · шаг 4</div>
@@ -1612,11 +1642,95 @@ void позиции_нельзя_удалить_снаружи() {
 
 <!--
 Главный момент демо: private не спас. Так пишут почти все.
-Здесь же: pay() и ship() — единственные точки изменения статуса, проверка в requireStatus().
+legacy при этом не меняется: он уже хранит Order, и исправление в одном классе закрывает дыру для всех, кто его использует.
 -->
 
 ---
+layout: default
+commit: "c5236c4"
+---
+
+# Значимый объект и сущность
+
+<div class="grid grid-cols-2 gap-12 mt-6">
+
+<div>
+
+### Значимый объект <span class="text-sm opacity-60 font-normal">value object</span>
+
+- равенство **по значению**
+- неизменяемый, копируется свободно
+- в Java — обычно `record`
+
+<div class="mt-4 text-lg">
+
+`Money` `OrderId` `Email` `OrderItem`
+
+</div>
+
+</div>
+
+<div>
+
+### Сущность <span class="text-sm opacity-60 font-normal">entity</span>
+
+- равенство **по идентификатору**
+- состояние меняется, важен жизненный цикл
+- в Java — `final class` с `equals` по `id`
+
+<div class="mt-4 text-lg">
+
+`Order` `Customer`
+
+</div>
+
+</div>
+
+</div>
+
+```java
+@Override
+public boolean equals(Object o) {           // Order
+    return o instanceof Order other && id.equals(other.id);
+}
+```
+
+<div class="callout text-sm mt-2">
+
+Проверка: два объекта с одинаковыми данными — **один и тот же или разные?** Два `rubles(100)` неразличимы. Два заказа на 100 ₽ — разные заказы.
+
+</div>
+
+<!--
+Спорный случай: Customer у нас record, но он сущность (есть CustomerId) — сознательное упрощение занятия 1, к корректным equals/hashCode вернёмся на занятии 2.
+Деление определяет, где объект можно делать изменяемым, а где нельзя.
+-->
+
+---
+layout: default
+---
+
+# Из литературы: значимый объект
+
+<div class="quote">
+
+> *Objects that are equal due to the value of their properties, in this case their x and y coordinates, are called value objects.*
+
+Объекты, равенство которых определяется значениями их свойств — в данном случае координат x и y, — называются значимыми объектами (value objects). <span class="opacity-50 text-xs">(пер. наш)</span>
+
+<div class="quote-src">Fowler M. ValueObject. — <a href="https://martinfowler.com/bliki/ValueObject.html">martinfowler.com/bliki/ValueObject.html</a> (сетевые ресурсы курса)</div>
+
+</div>
+
+<div class="text-sm opacity-70 mt-2">
+
+Там же Фаулер приводит деньги — сумму и валюту — как типичный значимый объект. Подробнее — в его книге Patterns of Enterprise Application Architecture (паттерны Value Object и Money).
+
+</div>
+
+---
 layout: two-cols
+commit: "c5236c4"
 ---
 
 # Инварианты заказа
@@ -1674,49 +1788,114 @@ private void requireStatus(OrderStatus expected) {
 -->
 
 ---
-layout: two-cols-header
+layout: two-cols
+commit: "44f50aa"
 ---
 
-# Примитивозависимость
+# Пять ролей — пять мест
 
-::left::
+| Роль         | Куда переехало                             |
+|--------------|--------------------------------------------|
+| бухгалтерия  | `Money`, `Order.total()`, `SalesReport`    |
+| маркетинг    | `Promo`                                    |
+| логистика    | `DeliveryTariff`                           |
+| поддержка    | `Notifier` → `ConsoleNotifier`             |
+| эксплуатация | `OrderRepository` → `InMemoryOrderRepository` |
 
-<div class="text-lg font-bold mb-2 bad">Было</div>
-
-```java
-public String place(String name, String email,
-                    String phone, String[] items,
-                    int[] qty, double[] prices,
-                    String delivery, boolean insurance,
-                    String promo)
-```
-
-<div class="text-sm opacity-60 mt-2">
-
-Девять параметров, шесть из них — `String` или массив. Поменяйте `email` и `phone` местами — компилятор промолчит.
-
+<div class="text-sm opacity-60 mt-4">
+Пакет <code>legacy</code> удалён: <code>domain</code> — правила, <code>app</code> — сценарии и порты, <code>infra</code> — консоль и память.
 </div>
 
 ::right::
 
-<div class="text-lg font-bold mb-2 good">Стало</div>
+<div class="pl-6 pt-16">
 
 ```java
-public Order place(Customer customer,
-                   List<OrderItem> items,
-                   DeliveryTariff delivery)
+public final class PlaceOrder {
+
+    private final OrderRepository orders;
+    private final Notifier notifier;
+
+    public PlaceOrder(OrderRepository orders,
+                      Notifier notifier) {
+        this.orders = orders;
+        this.notifier = notifier;
+    }
+
+    public Order place(Customer customer,
+                       List<OrderItem> items,
+                       DeliveryTariff delivery) { ... }
+}
 ```
 
-<div class="text-sm opacity-60 mt-2">
+<div class="callout text-sm mt-3">
 
-Три параметра, перепутать нельзя: типы разные. Невалидный `Email` не создаётся, три параллельных массива не рассинхронизируются.
+Зависимости — **через конструктор**. В тесте вместо консоли — `RecordingNotifier`, вместо базы — память.
+
+</div>
 
 </div>
 
 <!--
-Тип — самая дешёвая документация и самый быстрый тест.
-Параллельные массивы items/qty/prices: инвариант «одинаковая длина» нигде не проверяется. OrderItem делает нарушение невыразимым — нельзя иметь цену без товара.
-Страховку и промокод в демо намеренно не переносили — это материал для практики и домашней работы.
+Это ответ на таблицу «Требования за следующий год»: те же пять ролей, но у каждой теперь своё место.
+Telegram — новая реализация Notifier, PostgreSQL — новая реализация OrderRepository; сценарии и Order не меняются.
+Сценарии рядом с PlaceOrder: PayOrder, ShipOrder, CancelOrder. Вывод app.Main совпадает с выводом legacy.Main символ в символ — это рефакторинг, а не переписывание.
+-->
+
+---
+layout: two-cols
+commit: "538029a"
+---
+
+# Самовывоз: один новый класс
+
+```java
+/** Самовывоз: бесплатно, в день заказа. */
+public record Pickup() implements DeliveryTariff {
+
+    @Override
+    public Money cost(Money goods) {
+        return Money.ZERO;
+    }
+
+    @Override
+    public int days() {
+        return 0;
+    }
+}
+```
+
+```text
+$ git show --stat
+ .../app/Main.java      |  4 ++++
+ .../domain/Pickup.java | 15 +++++++++++++++
+ .../OrderTest.java     |  7 +++++++
+ 3 files changed, 26 insertions(+)
+```
+
+::right::
+
+<div class="pl-8 pt-16">
+
+### То самое требование логистики
+
+|               | legacy       | сейчас      |
+|---------------|--------------|-------------|
+| мест править  | 5            | 1 новый класс |
+| подскажет компилятор | нет   | да          |
+| старый код    | меняем       | не трогаем  |
+
+<div class="callout mt-6">
+
+Дизайн — это управление **ценой изменения**.
+
+</div>
+
+</div>
+
+<!--
+Возвращаемся к первому слайду части: «Добавьте самовывоз». В legacy это пять мест в OrderService, и ни одно не подскажет компилятор.
+Здесь Order, сценарии, уведомления и отчёт не тронуты, старые тесты зелёные. Для практики: где ещё осталось знание о конкретном тарифе? (instanceof ExpressDelivery в ConsoleNotifier и SalesReport.)
 -->
 
 ---
