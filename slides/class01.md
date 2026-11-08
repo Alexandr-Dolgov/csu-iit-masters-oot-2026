@@ -103,7 +103,7 @@ public class Main {
 
 <div class="pl-8 pt-4">
 
-### Объекты уже здесь
+### Объекты уже здесь, но "технические"
 
 - `"123"` — объект класса `String`
 - `System.out` — объект класса `PrintStream`, а `println` — его метод
@@ -156,7 +156,7 @@ layout: two-cols
 commit: "95bfb25"
 ---
 
-# Пока ещё объекты — структуры данных, «тупые» хранилища
+# Здесь объекты это — структуры данных, «тупые» хранилища
 
 ```java
 public static void main(String[] args) {
@@ -206,38 +206,6 @@ ru.chelgu.oot.class01.Person@4517d9a3
 layout: default
 ---
 
-# Из литературы: объект
-
-<div class="quote">
-
-> *Booch offers an even more succinct description of an object: An object has state, behavior and identity.*
-
-Буч даёт ещё более сжатое описание объекта: объект обладает состоянием, поведением и идентичностью. <span class="opacity-50 text-xs">(пер. наш)</span>
-
-<div class="quote-src">Eckel B. Thinking in Java, 4th ed. — Prentice Hall, 2006. ISBN 0-13-187248-6. Ch. 1 «Introduction to Objects», p. 17</div>
-
-</div>
-
-<div class="quote">
-
-> *…each object can be uniquely distinguished from every other object—to put this in a concrete sense, each object has a unique address in memory.*
-
-…каждый объект можно однозначно отличить от любого другого — говоря конкретнее, у каждого объекта свой уникальный адрес в памяти. <span class="opacity-50 text-xs">(пер. наш)</span>
-
-<div class="quote-src">Eckel B. Thinking in Java, 4th ed. — Prentice Hall, 2006. ISBN 0-13-187248-6. Ch. 1, p. 17</div>
-
-</div>
-
-<div class="text-sm opacity-70 mt-2">
-
-У `Person` на этом шаге есть состояние (`id`, `name`) и идентичность (`@4517d9a3`), но ещё нет поведения.
-
-</div>
-
----
-layout: default
----
-
 # Что внутри `System.out.println`
 
 <div class="grid grid-cols-2 gap-8 mt-2">
@@ -275,7 +243,7 @@ public String toString() {
 
 <div class="mt-6 callout text-sm">
 
-Как дойти до этого самому: в IDEA `Ctrl+B` (или `Ctrl`+клик) по `println` → провалиться в исходник; документация — `Ctrl+Q`. Читать исходники JDK — нормальная рабочая практика.
+Как дойти до этого самому: в IDEA `Ctrl+B` (или `Ctrl`+клик) по `println` → провалиться в исходник; документация — `Ctrl+Q`. Читать исходники — необходимая рабочая практика.
 
 </div>
 
@@ -359,7 +327,6 @@ Person [id=2, name=John]
 
 - `Person` **переопределил** (override) поведение родителя
 - `println` про `Person` ничего не знает и по-прежнему вызывает `toString()` — но теперь выполняется версия `Person`
-- принято помечать такие методы `@Override`: компилятор проверит, что метод действительно что-то переопределяет
 
 </div>
 
@@ -934,6 +901,38 @@ layout: default
 Отношение «является» (is-a) выражается наследованием, а отношение «имеет» (has-a) — композицией. <span class="opacity-50 text-xs">(пер. наш)</span>
 
 <div class="quote-src">Eckel B. Thinking in Java, 4th ed. — Prentice Hall, 2006. ISBN 0-13-187248-6. Ch. 7 «Reusing Classes», p. 179</div>
+
+</div>
+
+---
+layout: default
+---
+
+# Из литературы: объект
+
+<div class="quote">
+
+> *Booch offers an even more succinct description of an object: An object has state, behavior and identity.*
+
+Буч даёт ещё более сжатое описание объекта: объект обладает состоянием, поведением и идентичностью. <span class="opacity-50 text-xs">(пер. наш)</span>
+
+<div class="quote-src">Eckel B. Thinking in Java, 4th ed. — Prentice Hall, 2006. ISBN 0-13-187248-6. Ch. 1 «Introduction to Objects», p. 17</div>
+
+</div>
+
+<div class="quote">
+
+> *…each object can be uniquely distinguished from every other object—to put this in a concrete sense, each object has a unique address in memory.*
+
+…каждый объект можно однозначно отличить от любого другого — говоря конкретнее, у каждого объекта свой уникальный адрес в памяти. <span class="opacity-50 text-xs">(пер. наш)</span>
+
+<div class="quote-src">Eckel B. Thinking in Java, 4th ed. — Prentice Hall, 2006. ISBN 0-13-187248-6. Ch. 1, p. 17</div>
+
+</div>
+
+<div class="text-sm opacity-70 mt-2">
+
+У `Person` на этом шаге есть состояние (`id`, `name`) и идентичность (`@4517d9a3`), но ещё нет поведения.
 
 </div>
 
