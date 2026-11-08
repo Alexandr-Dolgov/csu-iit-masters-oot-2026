@@ -1,0 +1,14 @@
+services:
+  class01base:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        MODULE: class01base                                    # какой Maven-модуль собрать
+        MAIN_CLASS: ru.csu.iit.master2026.oot.class01base.Main # класс с main()
+    image: oot/class01base
+    pull_policy: build
+    environment:
+      MAIN_CLASS: ru.csu.iit.master2026.oot.class01base.Main   # можно переопределить при запуске
+      JAVA_TOOL_OPTIONS: "-Xmx256m"                            # опции JVM
+    # command: ["arg1", "arg2"]                                # аргументы для main(String[] args)
