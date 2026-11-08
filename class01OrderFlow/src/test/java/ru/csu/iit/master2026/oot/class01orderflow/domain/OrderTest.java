@@ -55,14 +55,22 @@ class OrderTest {
         assertThat(order.total()).isEqualTo(rubles(350 + 300));
     }
 
-    /** Дыра: поля private, а инвариант «не пустой» нарушается снаружи. Тест зелёный — и это плохо. */
     @Test
-    void позиции_можно_удалить_снаружи() {
-        var order = new Order(id, customer, new ArrayList<>(items), new CourierDelivery());
+    void позиции_нельзя_удалить_снаружи() {
+        var order = new Order(id, customer, items, new CourierDelivery());
 
-        order.items().clear();
+        assertThatThrownBy(() -> order.items().clear())
+                .isInstanceOf(UnsupportedOperationException.class);
+    }
 
-        assertThat(order.items()).isEmpty();
+    @Test
+    void изменение_исходного_списка_не_меняет_заказ() {
+        var source = new ArrayList<>(items);
+        var order = new Order(id, customer, source, new CourierDelivery());
+
+        source.clear();
+
+        assertThat(order.items()).hasSize(2);
     }
 
     @Test

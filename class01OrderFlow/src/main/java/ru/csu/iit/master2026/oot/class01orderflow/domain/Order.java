@@ -33,7 +33,7 @@ public final class Order {
         if (items.isEmpty()) {
             throw new IllegalArgumentException("Заказ не может быть пустым");
         }
-        this.items = items;          // чужой список
+        this.items = List.copyOf(items);
     }
 
     public Money goods() {
@@ -57,7 +57,7 @@ public final class Order {
     }
 
     public List<OrderItem> items() {
-        return items;                // отдаём свой
+        return items;   // неизменяемая копия
     }
 
     public DeliveryTariff delivery() {
