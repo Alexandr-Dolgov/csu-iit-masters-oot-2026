@@ -12,3 +12,15 @@ services:
       MAIN_CLASS: ru.csu.iit.master2026.oot.class01base.Main   # можно переопределить при запуске
       JAVA_TOOL_OPTIONS: "-Xmx256m"                            # опции JVM
     # command: ["arg1", "arg2"]                                # аргументы для main(String[] args)
+  class01orderflow:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        MODULE: class01OrderFlow
+        MAIN_CLASS: ru.csu.iit.master2026.oot.class01orderflow.legacy.Main
+    image: oot/class01orderflow
+    pull_policy: build
+    environment:
+      MAIN_CLASS: ru.csu.iit.master2026.oot.class01orderflow.legacy.Main # или ...class01orderflow.app.Main
+      JAVA_TOOL_OPTIONS: "-Xmx256m"

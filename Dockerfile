@@ -5,6 +5,7 @@ WORKDIR /src
 COPY .mvn/ .mvn/
 COPY mvnw pom.xml ./
 COPY class01base/pom.xml class01base/
+COPY class01OrderFlow/pom.xml class01OrderFlow/
 RUN --mount=type=cache,target=/root/.m2 ./mvnw -B -q dependency:go-offline
 COPY . .
 ARG MODULE=class01base
