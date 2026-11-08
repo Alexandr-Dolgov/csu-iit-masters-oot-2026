@@ -33,6 +33,13 @@ class OrderTest {
     }
 
     @Test
+    void самовывоз_бесплатный() {
+        var order = new Order(id, customer, items, new Pickup());
+
+        assertThat(order.total()).isEqualTo(rubles(3190));
+    }
+
+    @Test
     void страховка_3_процента_от_всей_суммы() {
         var order = new Order(id, customer, items, new CourierDelivery(), Promo.NONE, true);
 

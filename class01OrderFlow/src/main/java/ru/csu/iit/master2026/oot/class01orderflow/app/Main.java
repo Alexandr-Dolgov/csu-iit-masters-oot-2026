@@ -8,6 +8,7 @@ import ru.csu.iit.master2026.oot.class01orderflow.domain.ExpressDelivery;
 import ru.csu.iit.master2026.oot.class01orderflow.domain.Money;
 import ru.csu.iit.master2026.oot.class01orderflow.domain.Order;
 import ru.csu.iit.master2026.oot.class01orderflow.domain.OrderItem;
+import ru.csu.iit.master2026.oot.class01orderflow.domain.Pickup;
 import ru.csu.iit.master2026.oot.class01orderflow.domain.Promo;
 import ru.csu.iit.master2026.oot.class01orderflow.infra.ConsoleNotifier;
 import ru.csu.iit.master2026.oot.class01orderflow.infra.InMemoryOrderRepository;
@@ -49,6 +50,9 @@ public class Main {
                 new ExpressDelivery(), Promo.SAVE10, false);
         payOrder.pay(third.id(), rubles(58991));
         shipOrder.ship(third.id());
+
+        // Новое требование логистики: самовывоз, бесплатно, в день заказа
+        placeOrder.place(anna, kettleAndMugs, new Pickup());
 
         System.out.println(report.summary());
     }
