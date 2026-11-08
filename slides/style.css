@@ -1,0 +1,149 @@
+/* Глобальные стили колод курса «Объектно-ориентированные технологии».
+ *
+ * Slidev подхватывает этот файл автоматически (соглашение ./style.css),
+ * но только если колода запускается из этой папки:
+ *
+ *     cd slides
+ *     npx slidev 01-ответственность-и-абстракция.md
+ *
+ * Без файла колода тоже собирается — теряются только акцентный цвет,
+ * рамки врезок и уменьшенный кегль кода.
+ */
+
+:root {
+  --slidev-theme-primary: #2f6f9f;
+}
+
+.slidev-layout {
+  font-size: 1.02rem;
+}
+
+.slidev-layout h1 {
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.slidev-layout h2 {
+  font-weight: 500;
+  opacity: 0.7;
+}
+
+.slidev-layout h3 {
+  font-weight: 600;
+  color: var(--slidev-theme-primary);
+}
+
+/* Таблицы: узкое начертание и читаемые отступы вместо тяжёлых рамок темы */
+.slidev-layout table {
+  font-size: 0.82em;
+}
+
+.slidev-layout th {
+  text-align: left;
+  font-weight: 600;
+}
+
+.slidev-layout td,
+.slidev-layout th {
+  padding: 0.45em 0.7em;
+}
+
+.slidev-layout blockquote {
+  border-left-color: var(--slidev-theme-primary);
+}
+
+/* Код на слайдах демо длинный: тема по умолчанию ставит 12px на обёртку
+   .slidev-code через !important (--slidev-code-font-size). 11px — предел,
+   при котором двадцать строк кода ещё влезают в слайд вместе с заголовком
+   и подписью, оставаясь читаемыми с проектора. */
+.slidev-layout .slidev-code {
+  font-size: 11px !important;
+  line-height: 1.45 !important;
+}
+
+.slidev-layout :not(pre) > code {
+  font-size: 0.9em;
+}
+
+/* Панели кода в двухколоночных слайдах иначе смыкаются вплотную.
+   Класс лейаута стоит на самом корне слайда, поэтому селектор без
+   потомка. min-width:0 обязателен: без него колонка `1fr` растягивается
+   по самой длинной строке кода и игнорирует зазор. */
+.two-cols-header {
+  column-gap: 2rem !important;
+}
+
+.two-cols-header > *,
+.two-cols > * {
+  min-width: 0;
+}
+
+.accent {
+  color: var(--slidev-theme-primary);
+}
+
+.bad {
+  color: #b4453c;
+}
+
+.good {
+  color: #2f7d4f;
+}
+
+.callout {
+  border-left: 4px solid var(--slidev-theme-primary);
+  padding: 0.7rem 1rem;
+  background: rgba(47, 111, 159, 0.06);
+  border-radius: 0 4px 4px 0;
+}
+
+/* Угловые метки из slide-top.vue: номер слайда и хэш коммита демо-кода.
+   Мелко и приглушённо — это навигация, а не содержание слайда. */
+.slide-no,
+.commit-tag {
+  position: absolute;
+  bottom: 0.6rem;
+  font-size: 0.7rem;
+  opacity: 0.55;
+  z-index: 10;
+}
+
+.slide-no {
+  right: 1rem;
+}
+
+.commit-tag {
+  left: 1rem;
+}
+
+.commit-tag-label {
+  margin-right: 0.35rem;
+}
+
+.commit-tag code {
+  color: var(--slidev-theme-primary);
+  font-weight: 600;
+}
+
+/* Слайды «Из литературы»: цитата в оригинале, перевод, выходные данные.
+   Оригинал — курсивом через вложенный blockquote, перевод — обычным
+   текстом под ним, источник — мелко и приглушённо. */
+.quote {
+  margin-bottom: 1rem;
+  font-size: 0.9em;
+}
+
+.quote blockquote {
+  margin: 0 0 0.3rem 0;
+  font-size: 0.95em;
+}
+
+.quote p {
+  margin: 0.2rem 0;
+}
+
+.quote-src {
+  font-size: 0.72em;
+  opacity: 0.6;
+  margin-top: 0.15rem;
+}
