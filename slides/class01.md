@@ -80,7 +80,7 @@ layout: section
 
 ---
 layout: two-cols
-commit: 68748fb
+commit: "0781849"
 ---
 
 # Процедурная программа
@@ -119,7 +119,7 @@ public class Main {
 
 ---
 layout: two-cols
-commit: faa5611
+commit: "0fa1b8b"
 ---
 
 # Класс как структура данных
@@ -153,7 +153,7 @@ public class Person {
 
 ---
 layout: two-cols
-commit: 470fd84
+commit: "95bfb25"
 ---
 
 # Пока ещё объекты — структуры данных, «тупые» хранилища
@@ -289,7 +289,7 @@ public String toString() {
 
 ---
 layout: two-cols
-commit: 07d7923
+commit: "0a38211"
 ---
 
 # Наследование класса
@@ -321,7 +321,7 @@ public class Person extends Object {
 
 ---
 layout: two-cols
-commit: 5d3edc1
+commit: "514321d"
 ---
 
 # Переопределяем `toString`
@@ -367,7 +367,7 @@ Person [id=2, name=John]
 
 ---
 layout: two-cols
-commit: e09821c
+commit: "e128d5d"
 ---
 
 # Один объект — разные типы
@@ -451,7 +451,7 @@ layout: default
 
 ---
 layout: two-cols
-commit: 2939ef1
+commit: "bb7889d"
 ---
 
 # Области видимости
@@ -518,7 +518,7 @@ layout: default
 
 ---
 layout: two-cols
-commit: 2939ef1
+commit: "bb7889d"
 ---
 
 # Конструкторы
@@ -619,7 +619,7 @@ layout: default
 
 ---
 layout: two-cols
-commit: f31c398
+commit: "01dbf6c"
 ---
 
 # Инварианты и ограничения
@@ -666,7 +666,7 @@ public class Person extends Object
 
 ---
 layout: two-cols
-commit: f31c398
+commit: "01dbf6c"
 ---
 
 # Публичные методы — контракт класса
@@ -729,7 +729,7 @@ layout: default
 
 ---
 layout: two-cols
-commit: f31c398
+commit: "01dbf6c"
 ---
 
 # Интерфейсы
@@ -771,7 +771,7 @@ public class Person extends Object
 
 ---
 layout: two-cols
-commit: df70890
+commit: "6f05907"
 ---
 
 # Ещё больше типов
