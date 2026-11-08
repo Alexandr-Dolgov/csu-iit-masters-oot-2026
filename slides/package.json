@@ -1,0 +1,22 @@
+{
+  "name": "oot-slides",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev:class01": "slidev class01.md",
+    "build:class01": "slidev build class01.md --out dist-class01",
+    "export:class01": "slidev export class01.md"
+  },
+  "devDependencies": {
+    "@slidev/cli": "^53.0.0",
+    "@slidev/theme-default": "^0.25.0"
+  },
+  "overrides": {
+    "monaco-editor": {
+      "dompurify": "^3.4.17"
+    },
+    "pptxgenjs": {
+      "image-size": "^2.1.0"
+    }
+  }
+}
