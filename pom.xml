@@ -18,6 +18,7 @@
 
     <modules>
         <module>class01base</module>
+        <module>class01OrderFlow</module>
     </modules>
 
 </project>
