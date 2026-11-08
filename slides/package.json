@@ -3,12 +3,6 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "slidev 01-ответственность-и-абстракция.md",
-    "build": "slidev build 01-ответственность-и-абстракция.md",
-    "export": "slidev export 01-ответственность-и-абстракция.md",
-    "dev:v2": "slidev 01-ответственность-и-абстракция-v2.md",
-    "build:v2": "slidev build 01-ответственность-и-абстракция-v2.md --out dist-v2",
-    "export:v2": "slidev export 01-ответственность-и-абстракция-v2.md",
     "dev:class01": "slidev class01.md",
     "build:class01": "slidev build class01.md --out dist-class01",
     "export:class01": "slidev export class01.md"
