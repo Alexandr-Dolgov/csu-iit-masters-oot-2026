@@ -6,9 +6,7 @@ public class Main {
         Person p1 = new Person();
         p1.id = 1;
         p1.name = "John";
-        Person p2 = new Person();
-        p2.id = 2;
-        p2.name = "Alice";
+        Object p2 = new Person();
         System.out.println(p1);//Person [id=1, name=John]
         System.out.println(p2);//Person [id=2, name=Alice]
         p1.id = 2;
