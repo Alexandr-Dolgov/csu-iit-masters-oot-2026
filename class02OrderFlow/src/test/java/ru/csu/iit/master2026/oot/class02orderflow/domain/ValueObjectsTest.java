@@ -24,4 +24,12 @@ class ValueObjectsTest {
         assertThatThrownBy(() -> new Email("anna.example.ru"))
                 .isInstanceOf(IllegalArgumentException.class);
     }
+
+    @Test
+    void клиент_равен_по_идентификатору() {
+        var before = new Customer(new CustomerId("c-1"), "Анна", new Email("anna@example.ru"), "+79000000001");
+        var after = new Customer(new CustomerId("c-1"), "Анна", new Email("anna@example.ru"), "+79000000099");
+
+        assertThat(after).isEqualTo(before).hasSameHashCodeAs(before);
+    }
 }
