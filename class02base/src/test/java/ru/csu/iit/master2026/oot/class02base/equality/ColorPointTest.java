@@ -8,23 +8,24 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class ColorPointTest {
 
-    private final Point plain = new Point(1, 2);
     private final ColorPoint red = new ColorPoint(1, 2, "red");
-    private final ColorPoint blue = new ColorPoint(1, 2, "blue");
 
     @Test
-    void с_getClass_контракт_equals_соблюдён() {
-        assertThat(plain.equals(red)).isFalse();
-        assertThat(red.equals(plain)).isFalse();
-        assertThat(red.equals(blue)).isFalse();
-        assertThat(red.equals(new ColorPoint(1, 2, "red"))).isTrue();
+    void цветные_точки_равны_по_координатам_и_цвету() {
+        assertThat(red).isEqualTo(new ColorPoint(1, 2, "red"));
+        assertThat(red).isNotEqualTo(new ColorPoint(1, 2, "blue"));
     }
 
     @Test
-    void с_getClass_подстановка_нарушена() {
+    void с_точкой_не_сравнивается_вовсе() {
+        assertThat(red.equals(new Point(1, 2))).isFalse();
+        assertThat(new Point(1, 2).equals(red)).isFalse();
+    }
+
+    @Test
+    void нужна_точка_берём_точку() {
         Set<Point> grid = Set.of(new Point(0, 0), new Point(1, 2));
 
-        // Клиент Point не знает про подклассы: точка (1, 2) в сетке есть, а он её не находит
-        assertThat(grid.contains(new CountedPoint(1, 2))).isFalse();
+        assertThat(grid.contains(red.point())).isTrue();
     }
 }

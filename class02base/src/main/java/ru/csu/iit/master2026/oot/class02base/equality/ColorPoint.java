@@ -2,27 +2,15 @@ package ru.csu.iit.master2026.oot.class02base.equality;
 
 import java.util.Objects;
 
-/** Цветная точка: точка плюс новое значимое поле. Наследование кажется естественным. */
-public class ColorPoint extends Point {
+/** Цветная точка содержит точку, а не является ею. Нужна точка — попросите её явно. */
+public record ColorPoint(Point point, String color) {
 
-    private final String color;
+    public ColorPoint {
+        Objects.requireNonNull(point);
+        Objects.requireNonNull(color);
+    }
 
     public ColorPoint(int x, int y, String color) {
-        super(x, y);
-        this.color = Objects.requireNonNull(color);
-    }
-
-    public String color() {
-        return color;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        return super.equals(o) && color.equals(((ColorPoint) o).color);
-    }
-
-    @Override
-    public int hashCode() {
-        return 31 * super.hashCode() + color.hashCode();
+        this(new Point(x, y), color);
     }
 }
