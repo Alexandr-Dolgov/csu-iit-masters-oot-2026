@@ -1,24 +1,14 @@
 package ru.csu.iit.master2026.oot.class02base.shapes;
 
-/**
- * Квадрат — это прямоугольник? По геометрии да. По контракту {@link Rectangle} — нет:
- * чтобы остаться квадратом, он меняет обе стороны сразу.
- */
-public class Square extends Rectangle {
+/** Квадрат — сосед прямоугольника, а не наследник: обещаний Rectangle он не даёт. */
+public record Square(int side) implements Shape {
 
-    public Square(int side) {
-        super(side, side);
+    public Rectangle toRectangle() {
+        return new Rectangle(side, side);
     }
 
     @Override
-    public void setWidth(int width) {
-        super.setWidth(width);
-        super.setHeight(width);
-    }
-
-    @Override
-    public void setHeight(int height) {
-        super.setWidth(height);
-        super.setHeight(height);
+    public int area() {
+        return side * side;
     }
 }
