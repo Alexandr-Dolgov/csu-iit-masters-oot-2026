@@ -16,16 +16,9 @@ public class ColorPoint extends Point {
         return color;
     }
 
-    /** С обычной точкой сравниваемся без цвета — ради симметричности. */
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof Point)) {
-            return false;
-        }
-        if (!(o instanceof ColorPoint cp)) {
-            return o.equals(this);
-        }
-        return super.equals(cp) && color.equals(cp.color);
+        return super.equals(o) && color.equals(((ColorPoint) o).color);
     }
 
     @Override
