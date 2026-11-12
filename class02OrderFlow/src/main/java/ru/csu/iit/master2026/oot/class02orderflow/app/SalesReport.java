@@ -1,0 +1,32 @@
+package ru.csu.iit.master2026.oot.class02orderflow.app;
+
+import ru.csu.iit.master2026.oot.class02orderflow.domain.ExpressDelivery;
+import ru.csu.iit.master2026.oot.class02orderflow.domain.Money;
+import ru.csu.iit.master2026.oot.class02orderflow.domain.Order;
+import ru.csu.iit.master2026.oot.class02orderflow.domain.OrderStatus;
+
+/** Отчёт для бухгалтерии: сколько заказов, сколько экспресс, выручка по оплаченным. */
+public final class SalesReport {
+
+    private final OrderRepository orders;
+
+    public SalesReport(OrderRepository orders) {
+        this.orders = orders;
+    }
+
+    public String summary() {
+        int count = 0;
+        int express = 0;
+        Money revenue = Money.ZERO;
+        for (Order order : orders.findAll()) {
+            count++;
+            if (order.delivery() instanceof ExpressDelivery) {
+                express++;
+            }
+            if (order.status() == OrderStatus.PAID || order.status() == OrderStatus.SHIPPED) {
+                revenue = revenue.plus(order.total());
+            }
+        }
+        return "Заказов: " + count + ", экспресс: " + express + ", выручка: " + revenue;
+    }
+}
