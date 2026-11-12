@@ -2,6 +2,8 @@ package ru.csu.iit.master2026.oot.class02base.equality;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.Set;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 class ColorPointTest {
@@ -11,15 +13,18 @@ class ColorPointTest {
     private final ColorPoint blue = new ColorPoint(1, 2, "blue");
 
     @Test
-    void симметричность_восстановлена() {
-        assertThat(plain.equals(red)).isTrue();
-        assertThat(red.equals(plain)).isTrue();
+    void с_getClass_контракт_equals_соблюдён() {
+        assertThat(plain.equals(red)).isFalse();
+        assertThat(red.equals(plain)).isFalse();
+        assertThat(red.equals(blue)).isFalse();
+        assertThat(red.equals(new ColorPoint(1, 2, "red"))).isTrue();
     }
 
     @Test
-    void транзитивность_нарушена() {
-        assertThat(red.equals(plain)).isTrue();
-        assertThat(plain.equals(blue)).isTrue();
-        assertThat(red.equals(blue)).isFalse();
+    void с_getClass_подстановка_нарушена() {
+        Set<Point> grid = Set.of(new Point(0, 0), new Point(1, 2));
+
+        // Клиент Point не знает про подклассы: точка (1, 2) в сетке есть, а он её не находит
+        assertThat(grid.contains(new CountedPoint(1, 2))).isFalse();
     }
 }
