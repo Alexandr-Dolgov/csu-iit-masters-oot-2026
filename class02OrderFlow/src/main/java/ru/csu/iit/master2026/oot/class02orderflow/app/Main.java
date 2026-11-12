@@ -39,21 +39,34 @@ public class Main {
                 new OrderItem("Чайник", 1, rubles(2490)),
                 new OrderItem("Кружка", 2, rubles(350)));
 
-        Order first = placeOrder.place(anna, kettleAndMugs, new CourierDelivery());
+        Order first = placeOrder.place(Order.builder()
+                .customer(anna)
+                .items(kettleAndMugs)
+                .delivery(new CourierDelivery()));
         payOrder.pay(first.id(), rubles(3490));
         shipOrder.ship(first.id());
 
         // Тот же заказ со страховкой: 3490 + 3% = 3594.70 — клиент платит ровно столько
-        Order second = placeOrder.place(boris, kettleAndMugs, new CourierDelivery(), Promo.NONE, true);
+        Order second = placeOrder.place(Order.builder()
+                .customer(boris)
+                .items(kettleAndMugs)
+                .delivery(new CourierDelivery())
+                .insured());
         payOrder.pay(second.id(), new Money(359_470));
 
-        Order third = placeOrder.place(vera, List.of(new OrderItem("Ноутбук", 1, rubles(64990))),
-                new ExpressDelivery(), Promo.SAVE10, false);
+        Order third = placeOrder.place(Order.builder()
+                .customer(vera)
+                .item("Ноутбук", 1, rubles(64990))
+                .delivery(new ExpressDelivery())
+                .promo(Promo.SAVE10));
         payOrder.pay(third.id(), rubles(58991));
         shipOrder.ship(third.id());
 
         // Новое требование логистики: самовывоз, бесплатно, в день заказа
-        placeOrder.place(anna, kettleAndMugs, new Pickup());
+        placeOrder.place(Order.builder()
+                .customer(anna)
+                .items(kettleAndMugs)
+                .delivery(new Pickup()));
 
         System.out.println(report.render());
         System.out.println();

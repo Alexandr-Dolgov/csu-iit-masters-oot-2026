@@ -1,12 +1,6 @@
 package ru.csu.iit.master2026.oot.class02orderflow.app;
 
-import ru.csu.iit.master2026.oot.class02orderflow.domain.Customer;
-import ru.csu.iit.master2026.oot.class02orderflow.domain.DeliveryTariff;
 import ru.csu.iit.master2026.oot.class02orderflow.domain.Order;
-import ru.csu.iit.master2026.oot.class02orderflow.domain.OrderItem;
-import ru.csu.iit.master2026.oot.class02orderflow.domain.Promo;
-
-import java.util.List;
 
 /** Сценарий «оформить заказ». Зависимости приходят снаружи, через конструктор. */
 public final class PlaceOrder {
@@ -19,13 +13,9 @@ public final class PlaceOrder {
         this.notifier = notifier;
     }
 
-    public Order place(Customer customer, List<OrderItem> items, DeliveryTariff delivery) {
-        return place(customer, items, delivery, Promo.NONE, false);
-    }
-
-    public Order place(Customer customer, List<OrderItem> items, DeliveryTariff delivery,
-                       Promo promo, boolean insured) {
-        Order order = new Order(orders.nextId(), customer, items, delivery, promo, insured);
+    /** Одна сигнатура вместо перегрузок: что указать в заказе, решает черновик. */
+    public Order place(Order.Builder draft) {
+        Order order = draft.build(orders.nextId());
         orders.save(order);
         notifier.orderPlaced(order);
         return order;

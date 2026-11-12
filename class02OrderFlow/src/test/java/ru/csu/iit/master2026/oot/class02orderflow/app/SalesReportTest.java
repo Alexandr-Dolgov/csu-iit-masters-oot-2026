@@ -8,10 +8,7 @@ import ru.csu.iit.master2026.oot.class02orderflow.domain.CustomerId;
 import ru.csu.iit.master2026.oot.class02orderflow.domain.Email;
 import ru.csu.iit.master2026.oot.class02orderflow.domain.ExpressDelivery;
 import ru.csu.iit.master2026.oot.class02orderflow.domain.Order;
-import ru.csu.iit.master2026.oot.class02orderflow.domain.OrderItem;
 import ru.csu.iit.master2026.oot.class02orderflow.infra.InMemoryOrderRepository;
-
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static ru.csu.iit.master2026.oot.class02orderflow.domain.Money.rubles;
@@ -25,10 +22,15 @@ class SalesReportTest {
         Customer anna = new Customer(new CustomerId("c-1"), "Анна",
                 new Email("anna@example.ru"), "+79000000001");
         PlaceOrder placeOrder = new PlaceOrder(repository, new RecordingNotifier());
-        Order paid = placeOrder.place(anna, List.of(new OrderItem("Ноутбук", 1, rubles(64990))),
-                new ExpressDelivery());
+        Order paid = placeOrder.place(Order.builder()
+                .customer(anna)
+                .item("Ноутбук", 1, rubles(64990))
+                .delivery(new ExpressDelivery()));
         paid.pay();
-        placeOrder.place(anna, List.of(new OrderItem("Кружка", 1, rubles(350))), new CourierDelivery());
+        placeOrder.place(Order.builder()
+                .customer(anna)
+                .item("Кружка", 1, rubles(350))
+                .delivery(new CourierDelivery()));
     }
 
     @Test
