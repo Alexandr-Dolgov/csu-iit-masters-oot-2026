@@ -5,7 +5,10 @@
   "scripts": {
     "dev:class01": "slidev class01.md",
     "build:class01": "slidev build class01.md --out dist-class01",
-    "export:class01": "slidev export class01.md"
+    "export:class01": "slidev export class01.md",
+    "dev:class02": "slidev class02.md",
+    "build:class02": "slidev build class02.md --out dist-class02",
+    "export:class02": "slidev export class02.md"
   },
   "devDependencies": {
     "@slidev/cli": "^53.0.0",
