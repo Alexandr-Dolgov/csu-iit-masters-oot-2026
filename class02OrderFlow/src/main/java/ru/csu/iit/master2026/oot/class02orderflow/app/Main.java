@@ -26,7 +26,8 @@ public class Main {
         PlaceOrder placeOrder = new PlaceOrder(orders, notifier);
         PayOrder payOrder = new PayOrder(orders, notifier);
         ShipOrder shipOrder = new ShipOrder(orders, notifier);
-        SalesReport report = new SalesReport(orders);
+        SalesReport report = new TextSalesReport(orders);
+        SalesReport csv = new CsvSalesReport(orders);
 
         Customer anna = new Customer(new CustomerId("c-1"), "Анна",
                 new Email("anna@example.ru"), "+79000000001");
@@ -54,6 +55,8 @@ public class Main {
         // Новое требование логистики: самовывоз, бесплатно, в день заказа
         placeOrder.place(anna, kettleAndMugs, new Pickup());
 
-        System.out.println(report.summary());
+        System.out.println(report.render());
+        System.out.println();
+        System.out.print(csv.render());
     }
 }
