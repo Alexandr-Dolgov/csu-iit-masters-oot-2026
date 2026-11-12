@@ -20,28 +20,50 @@ class OrderTest {
 
     @Test
     void пустой_заказ_создать_нельзя() {
-        assertThatThrownBy(() -> new Order(id, customer, List.of(), new CourierDelivery()))
+        assertThatThrownBy(() -> Order.builder().customer(customer).items(List.of()).delivery(new CourierDelivery()).build(id))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("пустым");
     }
 
     @Test
+    void без_доставки_не_собрать() {
+        var draft = Order.builder().customer(customer).items(items);
+
+        assertThatThrownBy(() -> draft.build(id))
+                .isInstanceOf(NullPointerException.class)
+                .hasMessage("Не указана доставка");
+    }
+
+    @Test
+    void строитель_собирает_по_шагам() {
+        var order = Order.builder()
+                .customer(customer)
+                .item("Чайник", 1, rubles(2490))
+                .item("Кружка", 2, rubles(350))
+                .delivery(new CourierDelivery())
+                .insured()
+                .build(id);
+
+        assertThat(order.total()).isEqualTo(new Money(359_470));
+    }
+
+    @Test
     void сумма_складывается_из_товаров_и_доставки() {
-        var order = new Order(id, customer, items, new CourierDelivery());
+        var order = Order.builder().customer(customer).items(items).delivery(new CourierDelivery()).build(id);
 
         assertThat(order.total()).isEqualTo(rubles(3490));
     }
 
     @Test
     void самовывоз_бесплатный() {
-        var order = new Order(id, customer, items, new Pickup());
+        var order = Order.builder().customer(customer).items(items).delivery(new Pickup()).build(id);
 
         assertThat(order.total()).isEqualTo(rubles(3190));
     }
 
     @Test
     void страховка_3_процента_от_всей_суммы() {
-        var order = new Order(id, customer, items, new CourierDelivery(), Promo.NONE, true);
+        var order = Order.builder().customer(customer).items(items).delivery(new CourierDelivery()).insured().build(id);
 
         assertThat(order.total()).isEqualTo(new Money(359_470));
     }
@@ -49,7 +71,7 @@ class OrderTest {
     @Test
     void промокод_действует_только_на_товары() {
         var laptop = List.of(new OrderItem("Ноутбук", 1, rubles(64990)));
-        var order = new Order(id, customer, laptop, new ExpressDelivery(), Promo.SAVE10, false);
+        var order = Order.builder().customer(customer).items(laptop).delivery(new ExpressDelivery()).promo(Promo.SAVE10).build(id);
 
         assertThat(order.total()).isEqualTo(rubles(58491 + 500));
     }
@@ -57,14 +79,14 @@ class OrderTest {
     @Test
     void save500_не_действует_до_3000() {
         var mug = List.of(new OrderItem("Кружка", 1, rubles(350)));
-        var order = new Order(id, customer, mug, new CourierDelivery(), Promo.SAVE500, false);
+        var order = Order.builder().customer(customer).items(mug).delivery(new CourierDelivery()).promo(Promo.SAVE500).build(id);
 
         assertThat(order.total()).isEqualTo(rubles(350 + 300));
     }
 
     @Test
     void позиции_нельзя_удалить_снаружи() {
-        var order = new Order(id, customer, items, new CourierDelivery());
+        var order = Order.builder().customer(customer).items(items).delivery(new CourierDelivery()).build(id);
 
         assertThatThrownBy(() -> {
             var iterator = order.iterator();
@@ -76,7 +98,7 @@ class OrderTest {
     @Test
     void изменение_исходного_списка_не_меняет_заказ() {
         var source = new ArrayList<>(items);
-        var order = new Order(id, customer, source, new CourierDelivery());
+        var order = Order.builder().customer(customer).items(source).delivery(new CourierDelivery()).build(id);
 
         source.clear();
 
@@ -85,7 +107,7 @@ class OrderTest {
 
     @Test
     void позиции_обходятся_в_for_each() {
-        var order = new Order(id, customer, items, new CourierDelivery());
+        var order = Order.builder().customer(customer).items(items).delivery(new CourierDelivery()).build(id);
         int quantity = 0;
 
         for (OrderItem item : order) {
@@ -97,7 +119,7 @@ class OrderTest {
 
     @Test
     void оплаченный_заказ_отправляется() {
-        var order = new Order(id, customer, items, new CourierDelivery());
+        var order = Order.builder().customer(customer).items(items).delivery(new CourierDelivery()).build(id);
         order.pay();
         order.ship();
 
@@ -106,7 +128,7 @@ class OrderTest {
 
     @Test
     void неоплаченный_заказ_отправить_нельзя() {
-        var order = new Order(id, customer, items, new CourierDelivery());
+        var order = Order.builder().customer(customer).items(items).delivery(new CourierDelivery()).build(id);
 
         assertThatThrownBy(order::ship)
                 .isInstanceOf(IllegalStateException.class);
@@ -114,7 +136,7 @@ class OrderTest {
 
     @Test
     void дважды_оплатить_нельзя() {
-        var order = new Order(id, customer, items, new CourierDelivery());
+        var order = Order.builder().customer(customer).items(items).delivery(new CourierDelivery()).build(id);
         order.pay();
 
         assertThatThrownBy(order::pay)
@@ -123,7 +145,7 @@ class OrderTest {
 
     @Test
     void отправленный_заказ_отменить_нельзя() {
-        var order = new Order(id, customer, items, new CourierDelivery());
+        var order = Order.builder().customer(customer).items(items).delivery(new CourierDelivery()).build(id);
         order.pay();
         order.ship();
 
@@ -133,7 +155,7 @@ class OrderTest {
 
     @Test
     void отменённый_заказ_оплатить_нельзя() {
-        var order = new Order(id, customer, items, new CourierDelivery());
+        var order = Order.builder().customer(customer).items(items).delivery(new CourierDelivery()).build(id);
         order.cancel();
 
         assertThatThrownBy(order::pay)
@@ -143,8 +165,8 @@ class OrderTest {
 
     @Test
     void заказы_равны_по_идентификатору() {
-        var a = new Order(id, customer, items, new CourierDelivery());
-        var b = new Order(id, customer, items, new ExpressDelivery());
+        var a = Order.builder().customer(customer).items(items).delivery(new CourierDelivery()).build(id);
+        var b = Order.builder().customer(customer).items(items).delivery(new ExpressDelivery()).build(id);
 
         assertThat(a).isEqualTo(b);
     }

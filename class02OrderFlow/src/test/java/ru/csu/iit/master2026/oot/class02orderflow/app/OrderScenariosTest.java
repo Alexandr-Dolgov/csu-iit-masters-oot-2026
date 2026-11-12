@@ -31,7 +31,8 @@ class OrderScenariosTest {
 
     @Test
     void заказ_сохранён_и_клиент_уведомлён() {
-        Order order = placeOrder.place(anna, laptop, new ExpressDelivery());
+        Order order = placeOrder.place(
+                Order.builder().customer(anna).items(laptop).delivery(new ExpressDelivery()));
 
         assertThat(repository.find(order.id())).contains(order);
         assertThat(notifier.events).containsExactly("placed ORD-1");
@@ -39,7 +40,8 @@ class OrderScenariosTest {
 
     @Test
     void оплата_не_по_чеку_отклоняется() {
-        Order order = placeOrder.place(anna, laptop, new CourierDelivery());
+        Order order = placeOrder.place(
+                Order.builder().customer(anna).items(laptop).delivery(new CourierDelivery()));
 
         assertThatThrownBy(() -> payOrder.pay(order.id(), rubles(1)))
                 .isInstanceOf(IllegalArgumentException.class);
@@ -48,7 +50,8 @@ class OrderScenariosTest {
 
     @Test
     void отмена_оплаченного_возвращает_деньги() {
-        Order order = placeOrder.place(anna, laptop, new CourierDelivery());
+        Order order = placeOrder.place(
+                Order.builder().customer(anna).items(laptop).delivery(new CourierDelivery()));
         payOrder.pay(order.id(), rubles(64990));
 
         cancelOrder.cancel(order.id());
