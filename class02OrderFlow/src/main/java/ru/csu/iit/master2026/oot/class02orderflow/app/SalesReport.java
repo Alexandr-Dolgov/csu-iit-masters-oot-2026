@@ -3,7 +3,6 @@ package ru.csu.iit.master2026.oot.class02orderflow.app;
 import ru.csu.iit.master2026.oot.class02orderflow.domain.ExpressDelivery;
 import ru.csu.iit.master2026.oot.class02orderflow.domain.Money;
 import ru.csu.iit.master2026.oot.class02orderflow.domain.Order;
-import ru.csu.iit.master2026.oot.class02orderflow.domain.OrderStatus;
 
 import java.util.Comparator;
 
@@ -25,7 +24,7 @@ public final class SalesReport {
             if (order.delivery() instanceof ExpressDelivery) {
                 express++;
             }
-            if (order.status() == OrderStatus.PAID || order.status() == OrderStatus.SHIPPED) {
+            if (order.status().paid()) {
                 revenue = revenue.plus(order.total());
             }
         }
