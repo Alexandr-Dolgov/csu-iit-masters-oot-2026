@@ -24,6 +24,12 @@ public class Point {
         return o instanceof Point p && x == p.x && y == p.y;
     }
 
+    /** Равные объекты — равные хэши: иначе HashSet и HashMap их не найдут. */
+    @Override
+    public int hashCode() {
+        return 31 * x + y;
+    }
+
     @Override
     public String toString() {
         return "(" + x + ", " + y + ")";

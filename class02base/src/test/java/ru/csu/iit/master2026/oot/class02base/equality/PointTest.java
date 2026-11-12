@@ -23,11 +23,10 @@ class PointTest {
     }
 
     @Test
-    void hashSet_теряет_равную_точку() {
+    void hashSet_находит_равную_точку() {
         Set<Point> visited = new HashSet<>();
         visited.add(new Point(1, 2));
 
-        // equals переопределён, hashCode — нет: HashSet ищет не в той корзине
-        assertThat(visited.contains(new Point(1, 2))).isFalse();
+        assertThat(visited.contains(new Point(1, 2))).isTrue();
     }
 }
