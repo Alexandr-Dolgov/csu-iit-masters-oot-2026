@@ -5,7 +5,9 @@ import ru.csu.iit.master2026.oot.class02orderflow.domain.Money;
 import ru.csu.iit.master2026.oot.class02orderflow.domain.Order;
 import ru.csu.iit.master2026.oot.class02orderflow.domain.OrderStatus;
 
-/** Отчёт для бухгалтерии: сколько заказов, сколько экспресс, выручка по оплаченным. */
+import java.util.Comparator;
+
+/** Отчёт для бухгалтерии: сколько заказов, сколько экспресс, выручка по оплаченным, крупнейший заказ. */
 public final class SalesReport {
 
     private final OrderRepository orders;
@@ -27,6 +29,15 @@ public final class SalesReport {
                 revenue = revenue.plus(order.total());
             }
         }
-        return "Заказов: " + count + ", экспресс: " + express + ", выручка: " + revenue;
+        return "Заказов: " + count + ", экспресс: " + express + ", выручка: " + revenue
+                + ", крупнейший: " + largest();
+    }
+
+    /** Как сравнивать — стратегия, которую передаём в max. */
+    private String largest() {
+        return orders.findAll().stream()
+                .max(Comparator.comparing(Order::total))
+                .map(order -> order.id().toString())
+                .orElse("—");
     }
 }
