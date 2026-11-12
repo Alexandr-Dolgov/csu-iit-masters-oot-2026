@@ -117,6 +117,16 @@ class OrderTest {
     }
 
     @Test
+    void отменённый_заказ_оплатить_нельзя() {
+        var order = new Order(id, customer, items, new CourierDelivery());
+        order.cancel();
+
+        assertThatThrownBy(order::pay)
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("Нельзя оплатить заказ в статусе CANCELLED");
+    }
+
+    @Test
     void заказы_равны_по_идентификатору() {
         var a = new Order(id, customer, items, new CourierDelivery());
         var b = new Order(id, customer, items, new ExpressDelivery());

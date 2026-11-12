@@ -9,8 +9,7 @@ import java.util.Objects;
  * <p>Инварианты:
  * <ul>
  *   <li>в заказе есть хотя бы одна позиция;</li>
- *   <li>статус движется только вперёд: NEW → PAID → SHIPPED;</li>
- *   <li>отправленный заказ отменить нельзя.</li>
+ *   <li>статус движется только по разрешённым переходам — их знает {@link OrderStatus}.</li>
  * </ul>
  *
  * <p>Сумма: промокод на товары → доставка от суммы товаров со скидкой → страховка 3% от всего.
@@ -55,27 +54,15 @@ public final class Order {
     }
 
     public void pay() {
-        requireStatus(OrderStatus.NEW);
-        status = OrderStatus.PAID;
+        status = status.pay();
     }
 
     public void ship() {
-        requireStatus(OrderStatus.PAID);
-        status = OrderStatus.SHIPPED;
+        status = status.ship();
     }
 
     public void cancel() {
-        if (status == OrderStatus.SHIPPED) {
-            throw new IllegalStateException("Отправленный заказ отменить нельзя: " + id);
-        }
-        status = OrderStatus.CANCELLED;
-    }
-
-    private void requireStatus(OrderStatus expected) {
-        if (status != expected) {
-            throw new IllegalStateException(
-                    "Заказ " + id + " в статусе " + status + ", ожидался " + expected);
-        }
+        status = status.cancel();
     }
 
     public OrderId id() {
