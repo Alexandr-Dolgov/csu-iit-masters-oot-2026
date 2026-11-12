@@ -1,5 +1,6 @@
 package ru.csu.iit.master2026.oot.class02orderflow.domain;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
@@ -13,8 +14,10 @@ import java.util.Objects;
  * </ul>
  *
  * <p>Сумма: промокод на товары → доставка от суммы товаров со скидкой → страховка 3% от всего.
+ *
+ * <p>Паттерн «Итератор»: позиции можно обойти, но не получить список — ни индексов, ни size, ни add.
  */
-public final class Order {
+public final class Order implements Iterable<OrderItem> {
 
     private final OrderId id;
     private final Customer customer;
@@ -73,8 +76,10 @@ public final class Order {
         return customer;
     }
 
-    public List<OrderItem> items() {
-        return items;   // неизменяемая копия
+    /** Обход позиций. Итератор неизменяемой копии: remove бросит исключение. */
+    @Override
+    public Iterator<OrderItem> iterator() {
+        return items.iterator();
     }
 
     public DeliveryTariff delivery() {
