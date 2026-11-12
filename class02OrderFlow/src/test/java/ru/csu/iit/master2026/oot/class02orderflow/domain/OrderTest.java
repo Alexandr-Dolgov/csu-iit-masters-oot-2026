@@ -66,8 +66,11 @@ class OrderTest {
     void позиции_нельзя_удалить_снаружи() {
         var order = new Order(id, customer, items, new CourierDelivery());
 
-        assertThatThrownBy(() -> order.items().clear())
-                .isInstanceOf(UnsupportedOperationException.class);
+        assertThatThrownBy(() -> {
+            var iterator = order.iterator();
+            iterator.next();
+            iterator.remove();
+        }).isInstanceOf(UnsupportedOperationException.class);
     }
 
     @Test
@@ -77,7 +80,19 @@ class OrderTest {
 
         source.clear();
 
-        assertThat(order.items()).hasSize(2);
+        assertThat(order).hasSize(2);
+    }
+
+    @Test
+    void позиции_обходятся_в_for_each() {
+        var order = new Order(id, customer, items, new CourierDelivery());
+        int quantity = 0;
+
+        for (OrderItem item : order) {
+            quantity += item.quantity();
+        }
+
+        assertThat(quantity).isEqualTo(3);
     }
 
     @Test
