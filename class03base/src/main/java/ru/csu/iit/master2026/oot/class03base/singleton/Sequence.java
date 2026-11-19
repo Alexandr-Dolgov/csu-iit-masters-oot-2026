@@ -1,18 +1,12 @@
 package ru.csu.iit.master2026.oot.class03base.singleton;
 
-/** Паттерн «Одиночка»: единственный экземпляр и глобальная точка доступа к нему. */
+/**
+ * Обычный класс. Сколько счётчиков в приложении — один на всё или свой на каждый тест, —
+ * решает тот, кто собирает приложение, а не сам класс.
+ */
 public final class Sequence {
 
-    private static final Sequence INSTANCE = new Sequence();
-
     private int last = 0;
-
-    private Sequence() {
-    }
-
-    public static Sequence getInstance() {
-        return INSTANCE;
-    }
 
     public int next() {
         last++;
