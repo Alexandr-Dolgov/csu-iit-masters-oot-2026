@@ -22,6 +22,7 @@
         <module>class02base</module>
         <module>class02OrderFlow</module>
         <module>class03base</module>
+        <module>class03OrderFlow</module>
     </modules>
 
 </project>
