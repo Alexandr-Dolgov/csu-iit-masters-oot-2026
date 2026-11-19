@@ -8,6 +8,7 @@ COPY class01base/pom.xml class01base/
 COPY class01OrderFlow/pom.xml class01OrderFlow/
 COPY class02base/pom.xml class02base/
 COPY class02OrderFlow/pom.xml class02OrderFlow/
+COPY class03base/pom.xml class03base/
 RUN --mount=type=cache,target=/root/.m2 ./mvnw -B -q dependency:go-offline
 COPY . .
 ARG MODULE=class01base
