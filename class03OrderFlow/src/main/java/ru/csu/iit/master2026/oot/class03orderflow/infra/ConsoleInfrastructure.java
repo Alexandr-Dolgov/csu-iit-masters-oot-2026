@@ -1,5 +1,6 @@
 package ru.csu.iit.master2026.oot.class03orderflow.infra;
 
+import ru.csu.iit.master2026.oot.class03orderflow.app.CompositeNotifier;
 import ru.csu.iit.master2026.oot.class03orderflow.app.Infrastructure;
 import ru.csu.iit.master2026.oot.class03orderflow.app.Notifier;
 import ru.csu.iit.master2026.oot.class03orderflow.app.OrderRepository;
@@ -8,7 +9,8 @@ import ru.csu.iit.master2026.oot.class03orderflow.app.OrderRepository;
 public final class ConsoleInfrastructure implements Infrastructure {
 
     private final OrderRepository orders = new InMemoryOrderRepository();
-    private final Notifier notifier = new ConsoleNotifier();
+    /** Возвраты — бухгалтерии, остальное — клиенту. Для сценариев это один нотификатор. */
+    private final Notifier notifier = new CompositeNotifier(new RefundNotifier(), new ConsoleNotifier());
 
     @Override
     public OrderRepository orders() {

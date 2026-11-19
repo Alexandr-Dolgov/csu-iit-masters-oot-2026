@@ -33,9 +33,6 @@ public final class ConsoleNotifier implements Notifier {
 
     @Override
     public void orderCancelled(Order order, Money refund) {
-        if (refund.compareTo(Money.ZERO) > 0) {
-            System.out.println("Возврат " + refund + " по заказу " + order.id());
-        }
         email(order, "Заказ " + order.id() + " отменён");
     }
 
