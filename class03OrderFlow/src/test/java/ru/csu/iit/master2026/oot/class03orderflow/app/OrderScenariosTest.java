@@ -9,7 +9,6 @@ import ru.csu.iit.master2026.oot.class03orderflow.domain.ExpressDelivery;
 import ru.csu.iit.master2026.oot.class03orderflow.domain.Order;
 import ru.csu.iit.master2026.oot.class03orderflow.domain.OrderItem;
 import ru.csu.iit.master2026.oot.class03orderflow.domain.OrderStatus;
-import ru.csu.iit.master2026.oot.class03orderflow.infra.InMemoryOrderRepository;
 
 import java.util.List;
 
@@ -23,19 +22,18 @@ class OrderScenariosTest {
             new Email("anna@example.ru"), "+79000000001");
     private final List<OrderItem> laptop = List.of(new OrderItem("Ноутбук", 1, rubles(64990)));
 
-    private final InMemoryOrderRepository repository = new InMemoryOrderRepository();
-    private final RecordingNotifier notifier = new RecordingNotifier();
-    private final PlaceOrder placeOrder = new PlaceOrder(repository, notifier);
-    private final PayOrder payOrder = new PayOrder(repository, notifier);
-    private final CancelOrder cancelOrder = new CancelOrder(repository, notifier);
+    private final TestInfrastructure infra = new TestInfrastructure();
+    private final PlaceOrder placeOrder = new PlaceOrder(infra.orders(), infra.notifier());
+    private final PayOrder payOrder = new PayOrder(infra.orders(), infra.notifier());
+    private final CancelOrder cancelOrder = new CancelOrder(infra.orders(), infra.notifier());
 
     @Test
     void заказ_сохранён_и_клиент_уведомлён() {
         Order order = placeOrder.place(
                 Order.builder().customer(anna).items(laptop).delivery(new ExpressDelivery()));
 
-        assertThat(repository.find(order.id())).contains(order);
-        assertThat(notifier.events).containsExactly("placed ORD-1");
+        assertThat(infra.orders.find(order.id())).contains(order);
+        assertThat(infra.notifier.events).containsExactly("placed ORD-1");
     }
 
     @Test
@@ -56,7 +54,7 @@ class OrderScenariosTest {
 
         cancelOrder.cancel(order.id());
 
-        assertThat(notifier.events).containsExactly(
+        assertThat(infra.notifier.events).containsExactly(
                 "placed ORD-1", "paid ORD-1", "cancelled ORD-1 refund 64990.00 руб.");
     }
 }

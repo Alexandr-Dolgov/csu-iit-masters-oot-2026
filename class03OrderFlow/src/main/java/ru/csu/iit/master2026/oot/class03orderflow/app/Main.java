@@ -10,8 +10,7 @@ import ru.csu.iit.master2026.oot.class03orderflow.domain.Order;
 import ru.csu.iit.master2026.oot.class03orderflow.domain.OrderItem;
 import ru.csu.iit.master2026.oot.class03orderflow.domain.Pickup;
 import ru.csu.iit.master2026.oot.class03orderflow.domain.Promo;
-import ru.csu.iit.master2026.oot.class03orderflow.infra.ConsoleNotifier;
-import ru.csu.iit.master2026.oot.class03orderflow.infra.InMemoryOrderRepository;
+import ru.csu.iit.master2026.oot.class03orderflow.infra.ConsoleInfrastructure;
 
 import java.util.List;
 
@@ -21,13 +20,13 @@ import static ru.csu.iit.master2026.oot.class03orderflow.domain.Money.rubles;
 public class Main {
 
     public static void main(String[] args) {
-        OrderRepository orders = new InMemoryOrderRepository();
-        Notifier notifier = new ConsoleNotifier();
-        PlaceOrder placeOrder = new PlaceOrder(orders, notifier);
-        PayOrder payOrder = new PayOrder(orders, notifier);
-        ShipOrder shipOrder = new ShipOrder(orders, notifier);
-        SalesReport report = new TextSalesReport(orders);
-        SalesReport csv = new CsvSalesReport(orders);
+        // Единственное место, где названо конкретное семейство
+        Infrastructure infra = new ConsoleInfrastructure();
+        PlaceOrder placeOrder = new PlaceOrder(infra.orders(), infra.notifier());
+        PayOrder payOrder = new PayOrder(infra.orders(), infra.notifier());
+        ShipOrder shipOrder = new ShipOrder(infra.orders(), infra.notifier());
+        SalesReport report = new TextSalesReport(infra.orders());
+        SalesReport csv = new CsvSalesReport(infra.orders());
 
         Customer anna = new Customer(new CustomerId("c-1"), "Анна",
                 new Email("anna@example.ru"), "+79000000001");
