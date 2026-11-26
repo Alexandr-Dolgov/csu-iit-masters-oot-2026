@@ -10,6 +10,7 @@ COPY class02base/pom.xml class02base/
 COPY class02OrderFlow/pom.xml class02OrderFlow/
 COPY class03base/pom.xml class03base/
 COPY class03OrderFlow/pom.xml class03OrderFlow/
+COPY class04base/pom.xml class04base/
 COPY hw01OrderFlow/pom.xml hw01OrderFlow/
 COPY hw01bank/pom.xml hw01bank/
 RUN --mount=type=cache,target=/root/.m2 ./mvnw -B -q dependency:go-offline
