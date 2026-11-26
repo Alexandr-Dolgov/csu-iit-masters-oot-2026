@@ -140,7 +140,7 @@ List.of(...)                // какой — решает List
 
 ---
 layout: two-cols
-commit: "29e818d"
+commit: "6fb9de9"
 ---
 
 # Статические фабрики
@@ -193,7 +193,7 @@ Optional.empty() == Optional.empty();          // true
 
 ---
 layout: two-cols
-commit: "09e4b62"
+commit: "734ba81"
 ---
 
 # Фабричный метод: он уже есть
@@ -248,7 +248,7 @@ public Iterator<OrderItem> iterator() {
 
 ---
 layout: two-cols
-commit: "58f873b"
+commit: "be67abf"
 ---
 
 # Фабричный метод
@@ -334,7 +334,7 @@ layout: default
 
 ---
 layout: two-cols
-commit: "09e4b62"
+commit: "734ba81"
 ---
 
 # Абстрактная фабрика: было
@@ -378,7 +378,7 @@ PlaceOrder placeOrder =
 
 ---
 layout: two-cols
-commit: "9ca76a0"
+commit: "25b7605"
 ---
 
 # Абстрактная фабрика: стало
@@ -440,7 +440,7 @@ final class TestInfrastructure
 
 ---
 layout: two-cols
-commit: "647588a"
+commit: "60ac37b"
 ---
 
 # Абстрактная фабрика в JDK
@@ -515,7 +515,7 @@ layout: default
 
 ---
 layout: two-cols
-commit: "461a351"
+commit: "6f2a331"
 ---
 
 # Одиночка
@@ -645,7 +645,7 @@ layout: default
 
 ---
 layout: two-cols
-commit: "4c7f1aa"
+commit: "8df2fa3"
 ---
 
 # Одиночка: исправление
@@ -749,7 +749,7 @@ layout: default
 
 ---
 layout: two-cols
-commit: "bd393d9"
+commit: "f3fb329"
 ---
 
 # Адаптер в JDK
@@ -820,7 +820,7 @@ layout: default
 
 ---
 layout: two-cols
-commit: "f89cd8c"
+commit: "6fd9c2a"
 ---
 
 # Наследник HashSet
@@ -875,7 +875,7 @@ tags.addCount();   // 6
 
 ---
 layout: two-cols
-commit: "3fdcb0d"
+commit: "684a273"
 ---
 
 # Декоратор
@@ -962,7 +962,7 @@ layout: default
 
 ---
 layout: two-cols
-commit: "3fdcb0d"
+commit: "684a273"
 ---
 
 # Декоратор в JDK: `java.io`
@@ -1011,7 +1011,7 @@ copy;              // [sale]      — не видит
 
 ---
 layout: two-cols
-commit: "57c36de"
+commit: "51795ba"
 ---
 
 # Прокси
@@ -1067,7 +1067,7 @@ basket(caching);           // 2 запроса на оба вызова
 
 ---
 layout: two-cols
-commit: "57c36de"
+commit: "51795ba"
 ---
 
 # Динамический прокси
@@ -1183,7 +1183,7 @@ layout: default
 
 ---
 layout: two-cols
-commit: "d347374"
+commit: "3671e31"
 ---
 
 # Компоновщик
@@ -1239,7 +1239,7 @@ total(List.of(kettle, gift));      // 5461
 
 ---
 layout: two-cols
-commit: "9871652"
+commit: "eb72e7c"
 ---
 
 # Компоновщик в OrderFlow
@@ -1296,7 +1296,7 @@ new CompositeNotifier(new RefundNotifier(),
 
 ---
 layout: two-cols
-commit: "d347374"
+commit: "3671e31"
 ---
 
 # Компоновщик в JUnit
@@ -1375,7 +1375,7 @@ layout: default
 
 ---
 layout: two-cols
-commit: "130136b"
+commit: "caa5914"
 ---
 
 <div class="text-sm accent font-bold mb-2">Совместная задача · у экрана</div>
