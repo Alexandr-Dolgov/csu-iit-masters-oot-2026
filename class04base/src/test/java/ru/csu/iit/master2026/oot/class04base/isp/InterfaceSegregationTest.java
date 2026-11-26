@@ -2,42 +2,73 @@ package ru.csu.iit.master2026.oot.class04base.isp;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class InterfaceSegregationTest {
 
-    /** Бухгалтерии нужна только печать, но в сигнатуре — весь Device. */
-    private static List<String> printInvoices(Device device) {
-        return List.of(device.print("INV-1"), device.print("INV-2"));
+    /** Бухгалтерия зависит только от печати. */
+    private static List<String> printInvoices(Printer printer) {
+        return List.of(printer.print("INV-1"), printer.print("INV-2"));
     }
 
-    /** Архиву нужен только сканер. */
-    private static String archive(Device device) {
-        return device.scan("договор");
+    /** Архив — только от сканера: принтер сюда не передать, компилятор не даст. */
+    private static String archive(Scanner scanner) {
+        return scanner.scan("договор");
     }
 
     @Test
-    void печать_через_толстый_интерфейс_работает() {
+    void принтер_и_комбайн_подходят_бухгалтерии() {
         assertThat(printInvoices(new SimplePrinter()))
+                .containsExactly("напечатано: INV-1", "напечатано: INV-2");
+        assertThat(printInvoices(new MultiFunctionDevice()))
                 .containsExactly("напечатано: INV-1", "напечатано: INV-2");
     }
 
     @Test
-    void компилятор_пропускает_принтер_в_архив_а_падает_он_во_время_выполнения() {
-        // SimplePrinter — это Device, подстановка разрешена, но контракт scan не выполнен
-        assertThatThrownBy(() -> archive(new SimplePrinter()))
-                .isInstanceOf(UnsupportedOperationException.class);
+    void архиву_подходит_только_то_что_умеет_сканировать() {
+        // archive(new SimplePrinter()) — не компилируется: ошибка на этапе сборки, а не у клиента
+        assertThat(archive(new MultiFunctionDevice())).isEqualTo("отсканировано: договор");
     }
 
     @Test
-    void та_же_беда_в_jdk_list_of_не_умеет_add() {
-        // занятие 2: List требует add, неизменяемый список отказывается во время выполнения
-        List<String> tags = List.of("sale");
+    void узкий_интерфейс_легко_подменить_лямбдой() {
+        List<String> printed = new ArrayList<>();
+        Printer recording = document -> {
+            printed.add(document);
+            return "ok";
+        };
 
-        assertThatThrownBy(() -> tags.add("new"))
-                .isInstanceOf(UnsupportedOperationException.class);
+        printInvoices(recording);
+
+        assertThat(printed).containsExactly("INV-1", "INV-2");
+    }
+
+    /** Обойти может любой Iterable — не нужны ни size, ни add, ни remove из Collection. */
+    private static int totalLength(Iterable<String> words) {
+        int total = 0;
+        for (String word : words) {
+            total += word.length();
+        }
+        return total;
+    }
+
+    @Test
+    void в_jdk_узкие_интерфейсы_iterable_comparable_autocloseable() {
+        Iterable<String> two = () -> List.of("чай", "кофе").iterator();
+        assertThat(totalLength(two)).isEqualTo(7);
+
+        assertThat(Comparator.<String>naturalOrder().compare("а", "б")).isNegative();
+
+        List<String> log = new ArrayList<>();
+        try (AutoCloseable resource = () -> log.add("закрыт")) {
+            log.add("работает");
+        } catch (Exception e) {
+            throw new AssertionError(e);
+        }
+        assertThat(log).containsExactly("работает", "закрыт");
     }
 }
