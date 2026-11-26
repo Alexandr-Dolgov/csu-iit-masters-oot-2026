@@ -2,6 +2,8 @@ package ru.csu.iit.master2026.oot.class04base.transactional;
 
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 /**
  * Код сервиса о транзакциях не знает: ни begin, ни commit. Их добавит прокси, который Spring
  * подставит вместо этого бина. Класс не final — прокси будет его наследником (CGLIB).
@@ -32,5 +34,15 @@ public class TransferService {
             throw new LimitExceededException("Больше лимита: " + amount);
         }
         journal.add("зачислено " + amount + " на " + to);
+    }
+
+    /**
+     * Без аннотации. Внутри — {@code this.transfer(...)}: вызов идёт по ссылке на сам объект,
+     * а не на прокси, поэтому {@code @Transactional} на {@code transfer} не срабатывает.
+     */
+    public void payAll(String from, List<String> to, int amount) {
+        for (String recipient : to) {
+            transfer(from, recipient, amount);
+        }
     }
 }

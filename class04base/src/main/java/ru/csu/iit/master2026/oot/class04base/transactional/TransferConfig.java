@@ -24,4 +24,9 @@ public class TransferConfig {
     public TransferService transferService(Journal journal) {
         return new TransferService(journal);
     }
+
+    @Bean
+    public Payroll payroll(TransferService transfers) {
+        return new Payroll(transfers);
+    }
 }
