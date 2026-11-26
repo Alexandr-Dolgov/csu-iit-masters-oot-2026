@@ -5,7 +5,7 @@ import ru.csu.iit.master2026.oot.class04orderflow.domain.Order;
 /** Отчёт для чтения глазами. */
 public final class TextSalesReport extends SalesReport {
 
-    public TextSalesReport(OrderRepository orders) {
+    public TextSalesReport(OrderHistory orders) {
         super(orders);
     }
 

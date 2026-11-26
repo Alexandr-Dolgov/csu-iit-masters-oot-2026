@@ -5,7 +5,7 @@ import ru.csu.iit.master2026.oot.class04orderflow.domain.Order;
 /** Отчёт для таблицы бухгалтерии: суммы в копейках, без «руб.». */
 public final class CsvSalesReport extends SalesReport {
 
-    public CsvSalesReport(OrderRepository orders) {
+    public CsvSalesReport(OrderHistory orders) {
         super(orders);
     }
 

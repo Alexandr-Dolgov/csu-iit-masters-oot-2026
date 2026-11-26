@@ -21,9 +21,9 @@ public abstract class SalesReport {
     public record Totals(int count, int express, Money revenue, Optional<OrderId> largest) {
     }
 
-    private final OrderRepository orders;
+    private final OrderHistory orders;
 
-    protected SalesReport(OrderRepository orders) {
+    protected SalesReport(OrderHistory orders) {
         this.orders = orders;
     }
 

@@ -8,7 +8,10 @@ import ru.csu.iit.master2026.oot.class04orderflow.domain.CustomerId;
 import ru.csu.iit.master2026.oot.class04orderflow.domain.Email;
 import ru.csu.iit.master2026.oot.class04orderflow.domain.ExpressDelivery;
 import ru.csu.iit.master2026.oot.class04orderflow.domain.Order;
+import ru.csu.iit.master2026.oot.class04orderflow.domain.OrderId;
 import ru.csu.iit.master2026.oot.class04orderflow.infra.InMemoryOrderRepository;
+
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static ru.csu.iit.master2026.oot.class04orderflow.domain.Money.rubles;
@@ -16,11 +19,11 @@ import static ru.csu.iit.master2026.oot.class04orderflow.domain.Money.rubles;
 class SalesReportTest {
 
     private final InMemoryOrderRepository repository = new InMemoryOrderRepository();
+    private final Customer anna = new Customer(new CustomerId("c-1"), "Анна",
+            new Email("anna@example.ru"), "+79000000001");
 
     @BeforeEach
     void twoOrders() {
-        Customer anna = new Customer(new CustomerId("c-1"), "Анна",
-                new Email("anna@example.ru"), "+79000000001");
         PlaceOrder placeOrder = new PlaceOrder(repository, new RecordingNotifier());
         Order paid = placeOrder.place(Order.builder()
                 .customer(anna)
@@ -48,6 +51,22 @@ class SalesReportTest {
                 ORD-1;PAID;6549000
                 ORD-2;NEW;65000
                 TOTAL;2;6549000
+                """);
+    }
+
+    @Test
+    void отчёту_хватает_истории_двойник_одной_лямбдой() {
+        Order archived = Order.builder()
+                .customer(anna)
+                .item("Чайник", 1, rubles(2490))
+                .delivery(new CourierDelivery())
+                .build(new OrderId("ORD-7"));
+        OrderHistory history = () -> List.of(archived);
+
+        assertThat(new CsvSalesReport(history).render()).isEqualTo("""
+                id;status;total_kopecks
+                ORD-7;NEW;279000
+                TOTAL;1;0
                 """);
     }
 }
