@@ -24,6 +24,7 @@
         <module>class03base</module>
         <module>class03OrderFlow</module>
         <module>class04base</module>
+        <module>class04OrderFlow</module>
         <module>hw01OrderFlow</module>
         <module>hw01bank</module>
     </modules>

@@ -48,6 +48,18 @@ services:
     environment:
       MAIN_CLASS: ru.csu.iit.master2026.oot.class03orderflow.app.Main
       JAVA_TOOL_OPTIONS: "-Xmx256m"
+  class04orderflow:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        MODULE: class04OrderFlow
+        MAIN_CLASS: ru.csu.iit.master2026.oot.class04orderflow.app.Main
+    image: oot/class04orderflow
+    pull_policy: build
+    environment:
+      MAIN_CLASS: ru.csu.iit.master2026.oot.class04orderflow.app.Main
+      JAVA_TOOL_OPTIONS: "-Xmx256m"
   hw01orderflow:
     build:
       context: .
