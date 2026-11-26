@@ -15,9 +15,16 @@
     <properties>
         <junit.version>5.11.3</junit.version>
         <assertj.version>3.26.3</assertj.version>
+        <spring.version>7.0.11</spring.version>
     </properties>
 
     <dependencies>
+        <!-- для совместной задачи: сборка приложения Spring-контекстом -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
