@@ -11,7 +11,10 @@
     "export:class02": "slidev export class02.md",
     "dev:class03": "slidev class03.md",
     "build:class03": "slidev build class03.md --out dist-class03",
-    "export:class03": "slidev export class03.md"
+    "export:class03": "slidev export class03.md",
+    "dev:class04": "slidev class04.md",
+    "build:class04": "slidev build class04.md --out dist-class04",
+    "export:class04": "slidev export class04.md"
   },
   "devDependencies": {
     "@slidev/cli": "^53.0.0",
